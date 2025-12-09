@@ -1,12 +1,12 @@
 import pygame
 import random
 from pygame.sprite import Group
-from cowabunga.utils.utils import create_sprite
 from cowabunga.utils.constants import WIDTH, HEIGHT, FPS, WHITE, BLUE, BROWN, LIGHT_BLUE, GREEN
 from cowabunga.env.env import CowabungaEnv
 from cowabunga.pygame.sprites.cow import CowSprite
 from cowabunga.pygame.sprites.cliff import CliffSprite
 from cowabunga.pygame.sprites.paddle import PaddleSprite
+from cowabunga.pygame.sprites.text import LivesSprite, ScoreSprite, GameOverText, FinalScoreSprite
 
 
 class PygameRenderer():
@@ -37,6 +37,11 @@ class PygameRenderer():
         self.cliffs = Group()
         for cliff in self.env.cliffs:
             self.cliffs.add(CliffSprite(cliff))
+        # score and lives
+        self.lives = LivesSprite(self.env.lives)
+        self.score = ScoreSprite(self.env.score)
+        self.texts = Group()
+        self.texts.add(self.lives, self.score)
 
     def run(self):
         """Runs env loop in pygame."""
@@ -51,22 +56,60 @@ class PygameRenderer():
             
             # Player input
             self.paddle.get_key_input()
-            self.env.step(0)  # FIX HERE!!!
+            self.env.step(0)  # TODO: this only supports human player actions, change to support Agent
             # Cow logic
             self.update_cows()
-
-            # Draw elements
-            self.screen.fill(LIGHT_BLUE)
-            self.cliffs.draw(self.screen)
-            self.cows.draw(self.screen)
-            self.player.draw(self.screen)
-            
+            # Drawing
+            self.draw_screen()
             pygame.display.flip()
+
             clock.tick(FPS)
-        pygame.quit()
+            if self.env.done:
+                running = False
+                self.gameover_screen()
+        self.close()
 
     def update_cows(self):
         """Updates cow group using env info."""
         self.cows = Group()
         for cow in self.env.cows:
             self.cows.add(CowSprite(cow))
+
+    def draw_screen(self):
+        """Draws the updated screen."""
+        self.screen.fill(LIGHT_BLUE)
+        self.cliffs.draw(self.screen)
+        self.cows.draw(self.screen)
+        self.player.draw(self.screen)
+        # texts
+        self.lives.update_text(self.env.lives)
+        self.score.update_text(self.env.score)
+        self.texts.draw(self.screen)
+
+    def gameover_screen(self):
+        """Renders game over screen."""
+        self.screen.fill(LIGHT_BLUE)
+        self.cliffs.draw(self.screen)
+        self.cows.draw(self.screen)
+        self.player.draw(self.screen)
+
+        self.game_over_texts = Group()
+        self.game_over_texts.add(GameOverText(), FinalScoreSprite(self.env.score))
+        self.game_over_texts.draw(self.screen)
+
+        pygame.display.flip()
+        # wait until a click to close
+        wait = True
+        while wait:
+            for event in pygame.event.get():
+                if (
+                    event.type == pygame.QUIT
+                    or event.type == pygame.MOUSEBUTTONDOWN
+                    or (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN)
+                ):
+                    wait = False
+
+    @staticmethod
+    def close():
+        """Closes pygame."""
+        pygame.quit()

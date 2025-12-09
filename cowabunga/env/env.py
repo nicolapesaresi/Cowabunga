@@ -15,7 +15,7 @@ class CowabungaEnv():
         if self.seed is not None:
             np.random.seed(self.seed)
 
-        self.new_cow_prob = 0.01
+        self.new_cow_prob = 0.001
         self.max_cows_on_screen = 100
         self.reset()
 
@@ -45,15 +45,17 @@ class CowabungaEnv():
         ## update env
         # check collisions
         self.check_collisions()
-        # move cows
-        self.move_all_cows()
-        # check dead cows
-        # check safe cows
+        # update cows
+        self.update_cows()
         # generate new cows
         self.generate_new_cows()
         # update state
         obs = [] #TODO: implement
         info = {}
+
+        # check if game is finished
+        if self.lives < 1:
+            self.done = True
 
         return obs, self.done, info
 
@@ -63,24 +65,31 @@ class CowabungaEnv():
         cliffs_hitboxes = [cliff.get_hitbox() for cliff in self.cliffs]
         for cow in self.cows:
             # check collision with paddle
-            if cow.check_collision(paddle_hitbox):
-                cow.bounce()
+            if cow.check_landing_collision(paddle_hitbox):
+                cow.bounce(paddle_hitbox[1])
             #check collision with cliff
             landed = False
             for cliff_hitbox in cliffs_hitboxes:
-                cow_bottom = cow.y + cow.height
                 cliff_top = cliff_hitbox[1]
-                if cow.check_collision(cliff_hitbox) and cow_bottom >= cliff_top:
-                    cow.land()
+                if cow.check_landing_collision(cliff_hitbox):
+                    cow.land(cliff_top)
+                    landed = True
                     break
             if not landed:
                 cow.freefall()
 
-
-    def move_all_cows(self):
-        """Moves all cows according to their current velocity."""
+    def update_cows(self):
+        """Moves all cows according to their current velocity, and update score and lives."""
         for cow in self.cows:
             cow.move()
+            if cow.is_dead() and self.lives > 0:
+                self.lives -= 1
+            if cow.is_safe():
+                self.score += 1
+
+        # remove safe and dead cows from env
+        self.cows = [cow for cow in self.cows if not cow.is_dead() and not cow.is_safe()]
+
 
     def generate_new_cows(self):
         """Evaluates cows on the screen and decides wether to generate a new one."""
