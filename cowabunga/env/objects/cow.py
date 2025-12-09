@@ -10,14 +10,14 @@ class Cow(Rect):
         height = 50
         width = 50
         super().__init__(x, y, width, height)
-        self.velocity = [1.3, 0]
+        self.velocity = [1.25, 0]
 
     def move(self):
         """Moves cow based on it's velocity."""
         self.x += self.velocity[0]
         self.y += self.velocity[1]
 
-    def freefall(self, gravity = 0.1):
+    def freefall(self, gravity = 0.15):
         """Makes cow fall to gravity."""
         self.velocity[1] += gravity
 

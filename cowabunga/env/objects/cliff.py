@@ -15,5 +15,5 @@ class LeftCliff(Cliff):
 class RightCliff(Cliff):
     """Class for right cliff object."""
     def __init__(self):
-        self.topleft_corner = (WIDTH - 100, 175)
+        self.topleft_corner = (WIDTH - 100, 250)
         super().__init__(self.topleft_corner[0], self.topleft_corner[1])
