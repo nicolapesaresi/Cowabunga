@@ -1,7 +1,6 @@
 import pygame
 from cowabunga.env.objects.paddle import Paddle
 from cowabunga.env.actions import Action
-from cowabunga.utils.constants import BROWN
 
 class PaddleSprite(pygame.sprite.Sprite):
     """Sprite for paddle object."""
@@ -9,7 +8,7 @@ class PaddleSprite(pygame.sprite.Sprite):
         super().__init__()
         self.paddle = paddle
         self.image = pygame.Surface((self.paddle.width, self.paddle.height))
-        self.image.fill(BROWN)
+        self.image.fill("brown")
         self.rect = self.image.get_rect()
 
     def update(self):

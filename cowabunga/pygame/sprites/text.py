@@ -1,6 +1,5 @@
 import pygame
 import cowabunga.env.settings as settings
-from cowabunga.utils.constants import WHITE, YELLOW, BLACK
 
 class TextSprite(pygame.sprite.Sprite):
     """Generic text sprite object."""
@@ -27,7 +26,7 @@ class LivesSprite(TextSprite):
         if isinstance(text, int):
             text = str(text)
         font = pygame.font.Font(None, size = settings.HEIGHT // 18)
-        color = WHITE
+        color = "white"
         pos = (settings.WIDTH // 16, settings.WIDTH // 16)
         super().__init__(text, font, color, pos)
 
@@ -37,7 +36,7 @@ class ScoreSprite(TextSprite):
         if isinstance(text, int):
             text = str(text)
         font = pygame.font.Font(None, size = settings.HEIGHT // 18)
-        color = YELLOW
+        color = "yellow"
         pos = (14 * settings.WIDTH // 16, settings.WIDTH // 16)
         super().__init__(text, font, color, pos)
 
@@ -46,7 +45,7 @@ class GameOverText(TextSprite):
     def __init__(self):
         text = "GAME OVER"
         font = pygame.font.Font(None, size = settings.HEIGHT // 6)
-        color = BLACK
+        color = "black"
         pos = (settings.WIDTH // 2, settings.HEIGHT // 3)
         super().__init__(text, font, color, pos)
         # center text
@@ -58,7 +57,7 @@ class FinalScoreSprite(TextSprite):
         if isinstance(text, int):
             text = str(text)
         font = pygame.font.Font(None, size = settings.HEIGHT // 7)
-        color = YELLOW
+        color = "yellow"
         pos = (settings.WIDTH // 2, settings.HEIGHT // 2)
         super().__init__(text, font, color, pos)
         # center text
