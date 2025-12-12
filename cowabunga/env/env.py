@@ -27,6 +27,7 @@ class CowabungaEnv():
         self.done = False
 
         self.cows:list[Cow] = []
+        self.cow_id = 0 # needed in pygame to update cow sprites. gets updated at every new cow
         self.cliffs:list[LeftCliff, RightCliff] = [LeftCliff(), RightCliff()]
         self.paddle = Paddle()
 
@@ -97,4 +98,7 @@ class CowabungaEnv():
         n_cows = len(self.cows)
         if n_cows < self.max_cows_on_screen:
             if n_cows == 0 or np.random.random() < self.new_cow_prob:
-                self.cows.append(Cow())
+                new_cow = Cow()
+                new_cow.id = self.cow_id
+                self.cow_id += 1
+                self.cows.append(new_cow)

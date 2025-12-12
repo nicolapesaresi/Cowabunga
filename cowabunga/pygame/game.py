@@ -3,6 +3,7 @@ import random
 import cowabunga.env.settings as settings
 from pygame.sprite import Group
 from cowabunga.env.env import CowabungaEnv
+from cowabunga.env.objects.cow import Cow
 from cowabunga.pygame.sprites.cow import CowSprite
 from cowabunga.pygame.sprites.cliff import CliffSprite
 from cowabunga.pygame.sprites.paddle import PaddleSprite
@@ -39,6 +40,9 @@ class PygameRenderer():
         self.cliffs = Group()
         for cliff in self.env.cliffs:
             self.cliffs.add(CliffSprite(cliff))
+        self.cow_sprites : dict[int, Cow]= {}
+        self.cows = Group()
+        self.update_cows()
         # aestethics
         self.back_sea = BackSeaSprite()
         self.front_sea = FrontSeaSprite()
@@ -77,9 +81,20 @@ class PygameRenderer():
 
     def update_cows(self):
         """Updates cow group using env info."""
-        self.cows = Group()
+        current_cow_ids = {cow.id for cow in self.env.cows}
+        # Remove sprites for deleted cows
+        for cow_id, sprite in list(self.cow_sprites.items()):
+            if cow_id not in current_cow_ids:
+                self.cows.remove(sprite)
+                del self.cow_sprites[cow_id]
+        # Add sprites for new cows
         for cow in self.env.cows:
-            self.cows.add(CowSprite(cow))
+            if cow.id not in self.cow_sprites:
+                sprite = CowSprite(cow)
+                self.cows.add(sprite)
+                self.cow_sprites[cow.id] = sprite
+        for sprite in self.cow_sprites.values():
+            sprite.update()
 
     def draw_screen(self):
         """Draws the updated screen."""

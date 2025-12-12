@@ -4,7 +4,7 @@ from cowabunga.env.actions import Action
 
 class Paddle(Rect):
     """Paddle object for CowabungaEnv."""
-    def __init__(self, width = settings.WIDTH / 8, height = settings.HEIGHT / 30):
+    def __init__(self, width = settings.WIDTH / 8, height = settings.HEIGHT / 15):
         """Initializes paddle object."""
         x = settings.WIDTH // 2 - width / 2
         y = settings.sea_level - height
