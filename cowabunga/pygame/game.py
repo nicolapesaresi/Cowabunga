@@ -1,5 +1,6 @@
 import pygame
 import random
+import cowabunga.env.settings as settings
 from pygame.sprite import Group
 from cowabunga.utils.constants import WIDTH, HEIGHT, FPS, WHITE, BLUE, BROWN, LIGHT_BLUE, GREEN
 from cowabunga.env.env import CowabungaEnv
@@ -17,9 +18,10 @@ class PygameRenderer():
             seed: seed to be passed to the env for random cow generation.
         """
         self.seed = seed
-        
+        self.fps = settings.FPS
+
         pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
         pygame.display.set_caption("Cowabunga - Pygame Edition")
         self.main_menu()
 
@@ -63,7 +65,7 @@ class PygameRenderer():
             self.draw_screen()
             pygame.display.flip()
 
-            clock.tick(FPS)
+            clock.tick(self.fps)
             if self.env.done:
                 running = False
                 self.gameover_screen()

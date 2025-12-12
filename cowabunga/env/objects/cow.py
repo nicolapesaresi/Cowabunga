@@ -1,23 +1,23 @@
-from cowabunga.utils.constants import HEIGHT, WIDTH
+import cowabunga.env.settings as settings
 from cowabunga.env.objects.rect import Rect
 
 class Cow(Rect):
     """Cow object for CowabungaEnv."""
     def __init__(self):
         """Initializes cow object."""
+        height = settings.HEIGHT / 12
+        width = settings.WIDTH / 16
         x = 0
-        y = 125
-        height = 50
-        width = 50
+        y = settings.left_cliff_height - height
         super().__init__(x, y, width, height)
-        self.velocity = [1.25, 0]
+        self.velocity = [settings.WIDTH / 640, 0]
 
     def move(self):
         """Moves cow based on it's velocity."""
         self.x += self.velocity[0]
         self.y += self.velocity[1]
 
-    def freefall(self, gravity = 0.15):
+    def freefall(self, gravity = settings.HEIGHT / 4000):
         """Makes cow fall to gravity."""
         self.velocity[1] += gravity
 
@@ -37,7 +37,7 @@ class Cow(Rect):
         self.velocity[1] = -self.velocity[1]
         self.y = bounce_y - self.height
 
-    def is_dead(self, fall_y: int = HEIGHT):
+    def is_dead(self, fall_y: int = settings.HEIGHT):
         """Checks if cow has fallen off the screen.
         Args:
             fall_y: y coord value that defines when a cow has fallen off.
@@ -47,7 +47,7 @@ class Cow(Rect):
         else:
             return False
         
-    def is_safe(self, safe_x: int = WIDTH):
+    def is_safe(self, safe_x: int = settings.WIDTH):
         """Checks if cow has safely crossed.
         Args:
             safe_x: x coord value that defines when a cow has safely crossed.

@@ -50,6 +50,6 @@ class Rect:
             (bool): whether collision with the ground (below) has happened.
         """
         assert(hasattr(self, "velocity")), f"instance of Rect has no attribute self.velocity, needed to check collision with ground."
-        rect_bottom = self.y + self.width
-        previous_bottom = self.y + self.width - self.velocity[1]
+        rect_bottom = self.y + self.height
+        previous_bottom = self.y + self.height - self.velocity[1]
         return self.check_collision(ground_hitbox) and previous_bottom <= ground_hitbox[1] <= rect_bottom

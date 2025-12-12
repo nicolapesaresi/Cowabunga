@@ -1,5 +1,6 @@
 import pygame
-from cowabunga.utils.constants import WHITE, YELLOW, BLACK, WIDTH, HEIGHT
+import cowabunga.env.settings as settings
+from cowabunga.utils.constants import WHITE, YELLOW, BLACK
 
 class TextSprite(pygame.sprite.Sprite):
     """Generic text sprite object."""
@@ -25,9 +26,9 @@ class LivesSprite(TextSprite):
     def __init__(self, text: str|int):
         if isinstance(text, int):
             text = str(text)
-        font = pygame.font.Font(None, size = 40)
+        font = pygame.font.Font(None, size = settings.HEIGHT // 18)
         color = WHITE
-        pos = (50, 50)
+        pos = (settings.WIDTH // 16, settings.WIDTH // 16)
         super().__init__(text, font, color, pos)
 
 class ScoreSprite(TextSprite):
@@ -35,30 +36,30 @@ class ScoreSprite(TextSprite):
     def __init__(self, text: str|int):
         if isinstance(text, int):
             text = str(text)
-        font = pygame.font.Font(None, size = 40)
+        font = pygame.font.Font(None, size = settings.HEIGHT // 18)
         color = YELLOW
-        pos = (WIDTH - 50, 50)
+        pos = (14 * settings.WIDTH // 16, settings.WIDTH // 16)
         super().__init__(text, font, color, pos)
 
 class GameOverText(TextSprite):
     """Game over text sprite."""
     def __init__(self):
         text = "GAME OVER"
-        font = pygame.font.Font(None, size = 100)
+        font = pygame.font.Font(None, size = settings.HEIGHT // 6)
         color = BLACK
-        pos = (WIDTH // 2, 200)
+        pos = (settings.WIDTH // 2, settings.HEIGHT // 3)
         super().__init__(text, font, color, pos)
         # center text
-        self.rect.centerx = WIDTH // 2
+        self.rect.centerx = settings.WIDTH // 2
 
 class FinalScoreSprite(TextSprite):
     """Final score sprite."""
     def __init__(self, text: str|int):
         if isinstance(text, int):
             text = str(text)
-        font = pygame.font.Font(None, size = 80)
+        font = pygame.font.Font(None, size = settings.HEIGHT // 7)
         color = YELLOW
-        pos = (WIDTH // 2, 300)
+        pos = (settings.WIDTH // 2, settings.HEIGHT // 2)
         super().__init__(text, font, color, pos)
         # center text
-        self.rect.centerx = WIDTH // 2
+        self.rect.centerx = settings.WIDTH // 2

@@ -1,4 +1,5 @@
 import numpy as np
+import cowabunga.env.settings as settings
 from cowabunga.env.actions import Action
 from cowabunga.env.objects.cow import Cow
 from cowabunga.env.objects.paddle import Paddle
@@ -6,7 +7,7 @@ from cowabunga.env.objects.cliff import RightCliff, LeftCliff
 
 class CowabungaEnv():
     """Environment for cowabunga game."""
-    def __init__(self, seed: int):
+    def __init__(self, seed: int|None=None):
         """Instantiates the class.
         Args:
             seed: seed for random cow generation.
@@ -15,13 +16,13 @@ class CowabungaEnv():
         if self.seed is not None:
             np.random.seed(self.seed)
 
-        self.new_cow_prob = 0.001
-        self.max_cows_on_screen = 100
+        self.new_cow_prob = settings.NEW_COW_PROB
+        self.max_cows_on_screen = settings.MAX_COWS_ON_SCREEN
         self.reset()
 
     def reset(self):
         """Resets env to initial state."""
-        self.lives = 3
+        self.lives = settings.LIVES
         self.score = 0
         self.done = False
 
