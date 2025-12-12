@@ -13,7 +13,7 @@ class PaddleSprite(pygame.sprite.Sprite):
             self.image = pygame.image.load(self.asset)
             self.image = pygame.transform.scale(self.image, (self.paddle.width, self.paddle.height))
         except Exception as e:
-            print(f"Unable to load image for CowSprite: {e}")
+            print(f"Unable to load image for PaddleSprite: {e}")
             self.image = pygame.Surface((self.paddle.width, self.paddle.height))
             self.image.fill("brown")
         self.rect = self.image.get_rect()
