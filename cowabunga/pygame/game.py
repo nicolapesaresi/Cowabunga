@@ -2,11 +2,11 @@ import pygame
 import random
 import cowabunga.env.settings as settings
 from pygame.sprite import Group
-from cowabunga.utils.constants import WIDTH, HEIGHT, FPS, WHITE, BLUE, BROWN, LIGHT_BLUE, GREEN
 from cowabunga.env.env import CowabungaEnv
 from cowabunga.pygame.sprites.cow import CowSprite
 from cowabunga.pygame.sprites.cliff import CliffSprite
 from cowabunga.pygame.sprites.paddle import PaddleSprite
+from cowabunga.pygame.sprites.sea import FrontSeaSprite, BackSeaSprite
 from cowabunga.pygame.sprites.text import LivesSprite, ScoreSprite, GameOverText, FinalScoreSprite
 
 
@@ -39,6 +39,9 @@ class PygameRenderer():
         self.cliffs = Group()
         for cliff in self.env.cliffs:
             self.cliffs.add(CliffSprite(cliff))
+        # aestethics
+        self.back_sea = BackSeaSprite()
+        self.front_sea = FrontSeaSprite()
         # score and lives
         self.lives = LivesSprite(self.env.lives)
         self.score = ScoreSprite(self.env.score)
@@ -63,6 +66,7 @@ class PygameRenderer():
             self.update_cows()
             # Drawing
             self.draw_screen()
+            self.draw_text()
             pygame.display.flip()
 
             clock.tick(self.fps)
@@ -79,21 +83,22 @@ class PygameRenderer():
 
     def draw_screen(self):
         """Draws the updated screen."""
-        self.screen.fill(LIGHT_BLUE)
+        self.screen.fill("deepskyblue")
+        self.screen.blit(self.back_sea.image, self.back_sea.rect)
         self.cliffs.draw(self.screen)
         self.cows.draw(self.screen)
         self.player.draw(self.screen)
-        # texts
+        self.screen.blit(self.front_sea.image, self.front_sea.rect)
+
+    def draw_text(self):
+        """Draws score and lives text."""
         self.lives.update_text(self.env.lives)
         self.score.update_text(self.env.score)
         self.texts.draw(self.screen)
 
     def gameover_screen(self):
         """Renders game over screen."""
-        self.screen.fill(LIGHT_BLUE)
-        self.cliffs.draw(self.screen)
-        self.cows.draw(self.screen)
-        self.player.draw(self.screen)
+        self.draw_screen()
 
         self.game_over_texts = Group()
         self.game_over_texts.add(GameOverText(), FinalScoreSprite(self.env.score))

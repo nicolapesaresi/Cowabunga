@@ -7,7 +7,7 @@ class Paddle(Rect):
     def __init__(self, width = settings.WIDTH / 8, height = settings.HEIGHT / 30):
         """Initializes paddle object."""
         x = settings.WIDTH // 2 - width / 2
-        y = settings.HEIGHT - 30
+        y = settings.sea_level - height
         super().__init__(x, y, width, height)
 
     def move(self, direction: Action, pixels: int = settings.WIDTH / 80, margin: int = settings.WIDTH / 16):
