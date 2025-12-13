@@ -9,7 +9,7 @@ class Cow(Rect):
         """Initializes cow object."""
         height = settings.HEIGHT / 8
         width = height
-        x = 0
+        x = -width
         y = settings.left_cliff_height - height
         super().__init__(x, y, width, height)
         self.velocity = [settings.WIDTH / 590, 0]
