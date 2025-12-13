@@ -5,8 +5,8 @@ class Cow(Rect):
     """Cow object for CowabungaEnv."""
     def __init__(self):
         """Initializes cow object."""
-        height = settings.HEIGHT / 12
-        width = settings.WIDTH / 16
+        height = settings.HEIGHT / 8
+        width = height
         x = 0
         y = settings.left_cliff_height - height
         super().__init__(x, y, width, height)
