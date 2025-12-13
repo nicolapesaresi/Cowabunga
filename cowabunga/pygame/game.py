@@ -8,8 +8,8 @@ from cowabunga.pygame.sprites.cow import CowSprite
 from cowabunga.pygame.sprites.cliff import CliffSprite
 from cowabunga.pygame.sprites.paddle import PaddleSprite
 from cowabunga.pygame.sprites.sea import FrontSeaSprite, BackSeaSprite
+from cowabunga.pygame.sprites.sky import SkySprite
 from cowabunga.pygame.sprites.text import LivesSprite, ScoreSprite, GameOverText, FinalScoreSprite
-
 
 class PygameRenderer():
     """Pygame renderer for CowabungaEnv."""
@@ -44,6 +44,7 @@ class PygameRenderer():
         self.cows = Group()
         self.update_cows()
         # aestethics
+        self.sky = SkySprite()
         self.back_sea = BackSeaSprite()
         self.front_sea = FrontSeaSprite()
         # score and lives
@@ -98,7 +99,7 @@ class PygameRenderer():
 
     def draw_screen(self):
         """Draws the updated screen."""
-        self.screen.fill("deepskyblue")
+        self.screen.blit(self.sky.image, self.sky.rect)
         self.screen.blit(self.back_sea.image, self.back_sea.rect)
         self.cliffs.draw(self.screen)
         self.cows.draw(self.screen)
