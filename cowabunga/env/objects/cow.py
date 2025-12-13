@@ -1,8 +1,10 @@
 import cowabunga.env.settings as settings
 from cowabunga.env.objects.rect import Rect
 
+
 class Cow(Rect):
     """Cow object for CowabungaEnv."""
+
     def __init__(self):
         """Initializes cow object."""
         height = settings.HEIGHT / 8
@@ -17,7 +19,7 @@ class Cow(Rect):
         self.x += self.velocity[0]
         self.y += self.velocity[1]
 
-    def freefall(self, gravity = settings.HEIGHT / 4000):
+    def freefall(self, gravity=settings.HEIGHT / 4000):
         """Makes cow fall to gravity."""
         self.velocity[1] += gravity
 
@@ -46,7 +48,7 @@ class Cow(Rect):
             return True
         else:
             return False
-        
+
     def is_safe(self, safe_x: int = settings.WIDTH):
         """Checks if cow has safely crossed.
         Args:

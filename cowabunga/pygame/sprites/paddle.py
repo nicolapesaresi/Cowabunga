@@ -3,15 +3,19 @@ from cowabunga.env.objects.paddle import Paddle
 from cowabunga.env.actions import Action
 from pathlib import Path
 
+
 class PaddleSprite(pygame.sprite.Sprite):
     """Sprite for paddle object."""
+
     def __init__(self, paddle: Paddle):
         super().__init__()
         self.paddle = paddle
         self.asset = Path(__file__).parent / ".." / "assets" / "paddle.png"
         try:
             self.image = pygame.image.load(self.asset)
-            self.image = pygame.transform.scale(self.image, (self.paddle.width, self.paddle.height))
+            self.image = pygame.transform.scale(
+                self.image, (self.paddle.width, self.paddle.height)
+            )
         except Exception as e:
             print(f"Unable to load image for PaddleSprite: {e}")
             self.image = pygame.Surface((self.paddle.width, self.paddle.height))

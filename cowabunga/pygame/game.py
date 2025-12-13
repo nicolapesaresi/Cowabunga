@@ -1,5 +1,4 @@
 import pygame
-import random
 import cowabunga.env.settings as settings
 from pygame.sprite import Group
 from cowabunga.env.env import CowabungaEnv
@@ -9,11 +8,18 @@ from cowabunga.pygame.sprites.cliff import CliffSprite
 from cowabunga.pygame.sprites.paddle import PaddleSprite
 from cowabunga.pygame.sprites.sea import FrontSeaSprite, BackSeaSprite
 from cowabunga.pygame.sprites.sky import SkySprite
-from cowabunga.pygame.sprites.text import LivesSprite, ScoreSprite, GameOverText, FinalScoreSprite
+from cowabunga.pygame.sprites.text import (
+    LivesSprite,
+    ScoreSprite,
+    GameOverText,
+    FinalScoreSprite,
+)
 
-class PygameRenderer():
+
+class PygameRenderer:
     """Pygame renderer for CowabungaEnv."""
-    def __init__(self, seed: int|None = None):
+
+    def __init__(self, seed: int | None = None):
         """Initializes pygame renderer.
         Args:
             seed: seed to be passed to the env for random cow generation.
@@ -40,7 +46,7 @@ class PygameRenderer():
         self.cliffs = Group()
         for cliff in self.env.cliffs:
             self.cliffs.add(CliffSprite(cliff))
-        self.cow_sprites : dict[int, Cow]= {}
+        self.cow_sprites: dict[int, Cow] = {}
         self.cows = Group()
         self.update_cows()
         # aestethics
@@ -63,10 +69,12 @@ class PygameRenderer():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-            
+
             # Player input
             self.paddle.get_key_input()
-            self.env.step(0)  # TODO: this only supports human player actions, change to support Agent
+            self.env.step(
+                0
+            )  # TODO: this only supports human player actions, change to support Agent
             # Cow logic
             self.update_cows()
             # Drawing

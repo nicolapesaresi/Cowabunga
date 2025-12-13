@@ -2,15 +2,17 @@ import pygame
 import cowabunga.env.settings as settigns
 from pathlib import Path
 
+
 class SkySprite(pygame.sprite.Sprite):
     """Sprite for background sky."""
+
     def __init__(self):
         super().__init__()
         self.width = settigns.WIDTH
         self.height = settigns.HEIGHT
         self.x = 0
         self.y = 0
-        
+
         self.asset = Path(__file__).parent / ".." / "assets" / "sky.png"
         try:
             self.image = pygame.image.load(self.asset)
