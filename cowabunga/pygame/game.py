@@ -8,6 +8,7 @@ from cowabunga.pygame.sprites.cliff import CliffSprite
 from cowabunga.pygame.sprites.paddle import PaddleSprite
 from cowabunga.pygame.sprites.sea import FrontSeaSprite, BackSeaSprite
 from cowabunga.pygame.sprites.sky import SkySprite
+from cowabunga.pygame.sprites.cloud import CloudSprite
 from cowabunga.pygame.sprites.text import (
     LivesSprite,
     ScoreSprite,
@@ -53,6 +54,9 @@ class PygameRenderer:
         self.sky = SkySprite()
         self.back_sea = BackSeaSprite()
         self.front_sea = FrontSeaSprite()
+        self.clouds = Group()
+        for i in range(2):
+            self.clouds.add(CloudSprite())
         # score and lives
         self.lives = LivesSprite(self.env.lives)
         self.score = ScoreSprite(self.env.score)
@@ -108,6 +112,8 @@ class PygameRenderer:
     def draw_screen(self):
         """Draws the updated screen."""
         self.screen.blit(self.sky.image, self.sky.rect)
+        self.clouds.update()
+        self.clouds.draw(self.screen)
         self.back_sea.update()
         self.back_sea.draw(self.screen)
         self.cliffs.draw(self.screen)

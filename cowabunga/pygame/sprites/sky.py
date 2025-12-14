@@ -1,5 +1,5 @@
 import pygame
-import cowabunga.env.settings as settigns
+import cowabunga.env.settings as settings
 from pathlib import Path
 
 
@@ -8,8 +8,8 @@ class SkySprite(pygame.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.width = settigns.WIDTH
-        self.height = settigns.HEIGHT
+        self.width = settings.WIDTH
+        self.height = settings.HEIGHT
         self.x = 0
         self.y = 0
 
