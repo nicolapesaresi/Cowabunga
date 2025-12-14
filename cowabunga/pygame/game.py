@@ -108,11 +108,13 @@ class PygameRenderer:
     def draw_screen(self):
         """Draws the updated screen."""
         self.screen.blit(self.sky.image, self.sky.rect)
-        self.screen.blit(self.back_sea.image, self.back_sea.rect)
+        self.back_sea.update()
+        self.back_sea.draw(self.screen)
         self.cliffs.draw(self.screen)
         self.cows.draw(self.screen)
         self.player.draw(self.screen)
-        self.screen.blit(self.front_sea.image, self.front_sea.rect)
+        self.front_sea.update()
+        self.front_sea.draw(self.screen)
 
     def draw_text(self):
         """Draws score and lives text."""

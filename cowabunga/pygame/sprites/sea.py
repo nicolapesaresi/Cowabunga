@@ -1,78 +1,94 @@
 import pygame
-import cowabunga.env.settings as settings
 from pathlib import Path
+import cowabunga.env.settings as settings
 
 
 class SeaSprite(pygame.sprite.Sprite):
-    """Sprite for sea object.
-    Args:
-        x: x-coord of sprite's top left corner.
-        y: y-coord of sprite's top left corner.
-        width: width of sprite.
-        height: height of sprite.
-    """
+    """Generic sprite for sea layers."""
 
-    def __init__(self, x: int, y: int, width: int, height: int):
+    def __init__(
+        self,
+        *,
+        x: float,
+        y: float,
+        width: int,
+        height: int,
+        speed: float,
+        color: str,
+        alpha: int,
+        extra_height: int = 0,
+    ):
+        """Instantiates SeaSprite object.
+        Args:
+            x: initial x coord.
+            y: initial y coord.
+            width: width of the sea layer.
+            height: height of the sea layer.
+            speed: horizontal scrolling speed.
+            color: fallback color if image loading fails.
+            alpha: transparency level (0-255) if image loading fails.
+            extra_height: extra height to add to the sea sprite for overlap.
+        """
         super().__init__()
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.asset = Path(__file__).parent / ".." / "assets" / "sea.png"
 
-    def wiggle(self):
-        # to be implemented
-        pass
+        self.y = y
+        self.speed = speed
+        self.asset = Path(__file__).parent / ".." / "assets" / "sea.png"
+        self.image = self._load_image(width, height + extra_height, color, alpha)
+        self.rect = self.image.get_rect(topleft=(x, y - extra_height))
+
+        # tiling / scrolling
+        self.tile_width = self.rect.width
+        self.offset_x = 0
+        self.num_tiles = settings.WIDTH // self.tile_width + 2
+
+    def _load_image(self, width, height, color, alpha):
+        """Load sea image or fallback to colored surface."""
+        try:
+            image = pygame.image.load(self.asset)
+            return pygame.transform.scale(image, (width, height))
+        except Exception:
+            surface = pygame.Surface((width, height), pygame.SRCALPHA)
+            surface.fill(color)
+            surface.set_alpha(alpha)
+            return surface
+
+    def update(self):
+        self.offset_x = (self.offset_x + self.speed) % self.tile_width
+
+    def draw(self, screen: pygame.Surface):
+        for i in range(self.num_tiles):
+            x = (i - 1) * self.tile_width + self.offset_x
+            screen.blit(self.image, (x, self.rect.y))
 
 
 class FrontSeaSprite(SeaSprite):
     """Sprite for front sea."""
 
     def __init__(self):
-        color = "navy"
-        width = settings.WIDTH * 1.5
-        height = settings.HEIGHT // 10
-        x = -settings.WIDTH * 0.1
-        y = settings.sea_level - settings.HEIGHT * 0.01
-        super().__init__(x, y, width, height)
-
-        try:
-            extra_height = settings.HEIGHT * 0.01
-            self.image = pygame.image.load(self.asset)
-            self.image = pygame.transform.scale(
-                self.image, (self.width, self.height + extra_height)
-            )
-            self.rect = self.image.get_rect(topleft=(self.x, self.y - extra_height))
-        except Exception as e:
-            print(f"Unable to load image for SeaSprite: {e}")
-            self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-            self.image.fill(color)
-            self.image.set_alpha(180)
-            self.rect = self.image.get_rect(topleft=(self.x, self.y))
+        super().__init__(
+            x=-settings.WIDTH * 0.1,
+            y=settings.sea_level - settings.HEIGHT * 0.01,
+            width=int(settings.WIDTH * 1.5),
+            height=settings.HEIGHT // 10,
+            speed=settings.WIDTH / 1000,
+            color="navy",
+            alpha=180,
+            extra_height=int(settings.HEIGHT * 0.01),
+        )
 
 
 class BackSeaSprite(SeaSprite):
     """Sprite for back sea."""
 
     def __init__(self):
-        color = "blue"
-        width = settings.WIDTH * 1.5
-        height = settings.HEIGHT // 10
-        offset = width / 20  # offset from front sea
-        x = -settings.WIDTH * 0.1 + offset
-        y = settings.sea_level - settings.HEIGHT * 0.02
-        super().__init__(x, y, width, height)
-
-        try:
-            extra_height = settings.HEIGHT * 0.03
-            self.image = pygame.image.load(self.asset)
-            self.image = pygame.transform.scale(
-                self.image, (self.width, self.height + extra_height)
-            )
-            self.rect = self.image.get_rect(topleft=(self.x, self.y - extra_height))
-        except Exception as e:
-            print(f"Unable to load image for SeaSprite: {e}")
-            self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-            self.image.fill(color)
-            self.image.set_alpha(180)
-            self.rect = self.image.get_rect(topleft=(self.x, self.y))
+        super().__init__(
+            x=-settings.WIDTH * 0.1 + settings.WIDTH / 20,
+            y=settings.sea_level - settings.HEIGHT * 0.02,
+            width=int(settings.WIDTH * 1.5),
+            height=settings.HEIGHT // 10,
+            speed=settings.WIDTH / 1500,
+            color="blue",
+            alpha=255,
+            extra_height=int(settings.HEIGHT * 0.03),
+        )

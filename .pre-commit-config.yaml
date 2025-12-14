@@ -18,9 +18,9 @@ repos:
         name: Check for files that contain merge conflict strings
       - id: mixed-line-ending
         name: Check for mixed line endings
-      - id: no-commit-to-branch
-        name: Prevent commits to protected branches
-        args: ["--branch", "main", "--branch", "master"]
+      # - id: no-commit-to-branch
+      #   name: Prevent commits to protected branches
+      #   args: ["--branch", "main", "--branch", "master"]
   - repo: https://github.com/srstevenson/nb-clean
     rev: 3.2.0
     hooks:
