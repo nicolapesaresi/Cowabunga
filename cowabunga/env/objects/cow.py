@@ -14,6 +14,8 @@ class Cow(Rect):
         super().__init__(x, y, width, height)
         self.velocity = [settings.WIDTH / 590, 0]
 
+        self.bounces = 0
+
     def move(self):
         """Moves cow based on it's velocity."""
         self.x += self.velocity[0]
@@ -38,6 +40,7 @@ class Cow(Rect):
         """
         self.velocity[1] = -self.velocity[1]
         self.y = bounce_y - self.height
+        self.bounces += 1
 
     def is_dead(self, fall_y: int = settings.HEIGHT):
         """Checks if cow has fallen off the screen.

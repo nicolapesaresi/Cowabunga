@@ -37,8 +37,9 @@ class LivesSprite(TextSprite):
             text = str(text)
         font = pygame.font.Font(None, size=settings.HEIGHT // 18)
         color = "white"
-        pos = (settings.WIDTH // 16, settings.WIDTH // 16)
+        pos = (2 * settings.WIDTH // 16, settings.WIDTH // 16)
         super().__init__(text, font, color, pos)
+        self.rect.centerx = pos[0]
 
 
 class ScoreSprite(TextSprite):
@@ -51,6 +52,7 @@ class ScoreSprite(TextSprite):
         color = "yellow"
         pos = (14 * settings.WIDTH // 16, settings.WIDTH // 16)
         super().__init__(text, font, color, pos)
+        self.rect.centerx = pos[0]
 
 
 class GameOverText(TextSprite):

@@ -25,13 +25,25 @@ class CowSprite(pygame.sprite.Sprite):
     def __init__(self, cow: Cow, cow_type: str | None = None):
         super().__init__()
         self.cow = cow
-        self.load_asset(cow_type)
+        self.image = self.load_asset(cow_type)
         self.rect = self.image.get_rect(topleft=(self.cow.x, self.cow.y))
 
     def update(self):
         """Updates sprite with env info."""
         self.rect.x = self.cow.x
         self.rect.y = self.cow.y
+
+        # rotation
+        if self.cow.velocity[1] == 0 or (
+            self.cow.velocity[1] > 0 and self.cow.bounces == 3
+        ):
+            self.angle = 0
+        else:
+            if self.cow.bounces in (0, 2):
+                self.angle -= 0.4
+            else:
+                self.angle += 0.4
+        self.image = pygame.transform.rotate(self.original_image, self.angle)
 
     @classmethod
     def random_type(cls) -> CowType:
@@ -41,10 +53,12 @@ class CowSprite(pygame.sprite.Sprite):
         chosen_name = random.choices(names, weights=weights, k=1)[0]
         return cls.COW_TYPES[chosen_name]
 
-    def load_asset(self, cow_type: str):
+    def load_asset(self, cow_type: str) -> pygame.Surface:
         """Loads asset depending on cow type, randomly if not specified.
         Args:
             cow_type: one of the keys of self.COW_TYPES or None. In this case, chosen randomly accordingly to probs.
+        Returns:
+            original_image: loaded asset, to be reused when calculating rotation.
         """
         if cow_type and cow_type in self.COW_TYPES:
             self.cow_type = self.COW_TYPES[cow_type]
@@ -52,13 +66,15 @@ class CowSprite(pygame.sprite.Sprite):
             self.cow_type = self.random_type()
         self.asset = Path(__file__).parent / ".." / "assets" / self.cow_type.asset
         try:
-            self.image = pygame.image.load(self.asset)
-            self.image = pygame.transform.scale(
-                self.image, (self.cow.width, self.cow.height)
+            self.original_image = pygame.image.load(self.asset)
+            self.original_image = pygame.transform.scale(
+                self.original_image, (self.cow.width, self.cow.height)
             )
         except Exception as e:
             print(f"Unable to load image for CowSprite: {e}")
-            self.image = pygame.Surface(
+            self.original_image = pygame.Surface(
                 (self.cow.width, self.cow.height), pygame.SRCALPHA
             )
-            self.image.fill("white")
+            self.original_image.fill("white")
+        self.angle = 0
+        return self.original_image
