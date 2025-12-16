@@ -1,4 +1,5 @@
 import pygame
+import random
 import cowabunga.env.settings as settings
 from pygame.sprite import Group
 from cowabunga.env.env import CowabungaEnv
@@ -56,7 +57,9 @@ class PygameRenderer:
         self.front_sea = FrontSeaSprite()
         self.clouds = Group()
         for i in range(2):
-            self.clouds.add(CloudSprite())
+            self.clouds.add(
+                CloudSprite(x=random.random() * settings.WIDTH / 2 + settings.WIDTH / 2)
+            )
         # score and lives
         self.lives = LivesSprite(self.env.lives)
         self.score = ScoreSprite(self.env.score)
@@ -109,10 +112,25 @@ class PygameRenderer:
         for sprite in self.cow_sprites.values():
             sprite.update()
 
+    def update_clouds(self):
+        """Updates and generates new clouds."""
+        for cloud in self.clouds:
+            if (cloud.rect.x > settings.WIDTH and cloud.speed > 0) or (
+                cloud.rect.x < 0 - cloud.width and cloud.speed < 0
+            ):
+                self.clouds.remove(cloud)
+                cloud.kill()
+        self.clouds.update()
+        if (
+            random.random() <= settings.NEW_CLOUD_PROB
+            and len(self.clouds) < settings.MAX_CLOUDS_ON_SCREEN
+        ):
+            self.clouds.add(CloudSprite(x=settings.WIDTH))
+
     def draw_screen(self):
         """Draws the updated screen."""
         self.screen.blit(self.sky.image, self.sky.rect)
-        self.clouds.update()
+        self.update_clouds()
         self.clouds.draw(self.screen)
         self.back_sea.update()
         self.back_sea.draw(self.screen)

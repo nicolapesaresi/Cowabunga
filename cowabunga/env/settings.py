@@ -14,3 +14,6 @@ left_cliff_height = HEIGHT / 3.4  # used both by Cow and Cliff
 
 # pygame settings
 FPS = 60
+# AESTHETICS
+MAX_CLOUDS_ON_SCREEN = 7
+NEW_CLOUD_PROB = 0.005

@@ -1,6 +1,5 @@
 import pygame
 import random
-import numpy as np
 import cowabunga.env.settings as settings
 from pathlib import Path
 
@@ -10,37 +9,37 @@ class CloudSprite(pygame.sprite.Sprite):
 
     def __init__(
         self,
-        height: int = random.random() * settings.HEIGHT * 0.3 + settings.HEIGHT * 0.05,
+        height: int | None = None,
         x: int | None = None,
-        y: int = random.random() * settings.HEIGHT * 0.55 + settings.HEIGHT * 0.05,
-        speed: int | None = None,
+        y: int | None = None,
+        speed: float | None = None,
         alpha: int = 180,
     ):
         """Instantiates cloud sprite. If parameters are not specified, they are chosen randomly and starting position is just outside of the screen.
         Args:
             height: height of the cloud sprite.
-            x: x position of the cloud sprite. If None, starts just outside of the left or right side of the screen.
-            y: y position of the cloud sprite.
+            x: x position of the cloud sprite. By default a random x coord.
+            y: y position of the cloud sprite. By default a random y coord.
             speed: speed of the cloud sprite (pixels per update).
             alpha: transparency of the cloud sprite (0-255).
         """
         super().__init__()
+        if height is None:
+            height = random.random() * settings.HEIGHT * 0.2 + settings.HEIGHT * 0.1
+        if x is None:
+            x = random.random() * settings.WIDTH
+        if y is None:
+            y = random.random() * settings.HEIGHT * 0.40 + settings.HEIGHT * 0.01
+        if speed is None:
+            speed = -(
+                random.random() * settings.WIDTH * 0.0005 + settings.WIDTH * 0.0005
+            )
         self.height = height
         self.width = self.height / settings.HEIGHT * settings.WIDTH
-        if x:
-            self.x = x
-            speed_sign = 1
-        else:
-            self.x = random.choice([-self.width, settings.WIDTH])
-            speed_sign = np.sign(self.x) * -1
+        self.x = x
         self.y = y
+        self.speed = speed
         self.alpha = alpha
-        if speed:
-            self.speed = speed
-        else:
-            self.speed = (
-                random.random() * settings.WIDTH * 0.001 + settings.WIDTH * 0.0005
-            ) * speed_sign
 
         # check cloud will enter screen if it starts outside
         if self.x < 0:
