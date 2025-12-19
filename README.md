@@ -49,5 +49,5 @@ poetry install
 ```
 Now you can run the game with:
 ```
-python -m scripts.main
+python -m cowabunga
 ```
