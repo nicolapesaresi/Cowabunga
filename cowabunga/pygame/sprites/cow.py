@@ -40,9 +40,9 @@ class CowSprite(pygame.sprite.Sprite):
             self.angle = 0
         else:
             if self.cow.bounces in (0, 2):
-                self.angle -= 0.4
+                self.angle -= 0.3
             else:
-                self.angle += 0.4
+                self.angle += 0.3
         self.image = pygame.transform.rotate(self.original_image, self.angle)
 
     @classmethod

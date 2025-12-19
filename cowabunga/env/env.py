@@ -70,18 +70,21 @@ class CowabungaEnv:
         paddle_hitbox = self.paddle.get_hitbox()
         cliffs_hitboxes = [cliff.get_hitbox() for cliff in self.cliffs]
         for cow in self.cows:
-            # check collision with paddle
+            collided = False
+            # paddle collision (bounce)
             if cow.check_landing_collision(paddle_hitbox):
                 cow.bounce(paddle_hitbox[1])
-            # check collision with cliff
-            landed = False
-            for cliff_hitbox in cliffs_hitboxes:
-                cliff_top = cliff_hitbox[1]
-                if cow.check_landing_collision(cliff_hitbox):
-                    cow.land(cliff_top)
-                    landed = True
-                    break
-            if not landed:
+                collided = True
+            # cliff collision (land)
+            if not collided:
+                for cliff_hitbox in cliffs_hitboxes:
+                    cliff_top = cliff_hitbox[1]
+                    if cow.check_landing_collision(cliff_hitbox):
+                        cow.land(cliff_top)
+                        collided = True
+                        break
+            # apply gravity if no collision happened
+            if not collided:
                 cow.freefall()
 
     def update_cows(self):
