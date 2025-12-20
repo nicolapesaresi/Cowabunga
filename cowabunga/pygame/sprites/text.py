@@ -30,7 +30,7 @@ class TextSprite(pygame.sprite.Sprite):
 
 
 class TitleText(TextSprite):
-    """Game over text sprite."""
+    """Main menu title text sprite."""
 
     def __init__(self):
         text = "COWABUNGA"
@@ -43,10 +43,10 @@ class TitleText(TextSprite):
 
 
 class PressToPlayText(TextSprite):
-    """Game over text sprite."""
+    """Text that indiucates how to start a game."""
 
     def __init__(self):
-        text = "Press enter to start the game"
+        text = "Press enter to start a game"
         font = pygame.font.SysFont(None, settings.HEIGHT // 20, italic=True)
         color = "white"
         pos = (settings.WIDTH // 2, settings.HEIGHT * 0.55)
@@ -103,6 +103,19 @@ class FinalScoreSprite(TextSprite):
         font = pygame.font.Font(None, size=settings.HEIGHT // 7)
         color = "yellow"
         pos = (settings.WIDTH // 2, settings.HEIGHT // 2)
+        super().__init__(text, font, color, pos)
+        # center text
+        self.rect.centerx = settings.WIDTH // 2
+
+
+class PressToGoToMenuText(TextSprite):
+    """Text that indicates how to go back to main menu."""
+
+    def __init__(self):
+        text = "Press enter to retry"
+        font = pygame.font.SysFont(None, settings.HEIGHT // 20, italic=True)
+        color = "white"
+        pos = (settings.WIDTH // 2, settings.HEIGHT * 0.65)
         super().__init__(text, font, color, pos)
         # center text
         self.rect.centerx = settings.WIDTH // 2

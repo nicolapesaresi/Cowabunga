@@ -17,6 +17,7 @@ from cowabunga.pygame.sprites.text import (
     ScoreSprite,
     GameOverText,
     FinalScoreSprite,
+    PressToGoToMenuText,
 )
 
 
@@ -114,8 +115,11 @@ class PygameRenderer:
 
             self.clock.tick(self.fps)
             if self.env.done:
-                running = False
                 self.gameover_screen()
+                # when gameover screen is exited, reset env and go back to main menu
+                self.env.reset()
+                self.update_cows()  # removes leftover cow sprites before going back to menu
+                self.main_menu()
         self.close()
 
     def update_cows(self):
@@ -174,7 +178,9 @@ class PygameRenderer:
         self.draw_screen()
 
         self.game_over_texts = Group()
-        self.game_over_texts.add(GameOverText(), FinalScoreSprite(self.env.score))
+        self.game_over_texts.add(
+            GameOverText(), FinalScoreSprite(self.env.score), PressToGoToMenuText()
+        )
         self.game_over_texts.draw(self.screen)
 
         pygame.display.flip()
@@ -182,10 +188,10 @@ class PygameRenderer:
         wait = True
         while wait:
             for event in pygame.event.get():
-                if (
-                    event.type == pygame.QUIT
-                    or event.type == pygame.MOUSEBUTTONDOWN
-                    or (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN)
+                if event.type == pygame.QUIT:
+                    self.close()
+                elif event.type == pygame.MOUSEBUTTONDOWN or (
+                    event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN
                 ):
                     wait = False
 
