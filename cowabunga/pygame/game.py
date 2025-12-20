@@ -11,6 +11,8 @@ from cowabunga.pygame.sprites.sea import FrontSeaSprite, BackSeaSprite
 from cowabunga.pygame.sprites.sky import SkySprite
 from cowabunga.pygame.sprites.cloud import CloudSprite
 from cowabunga.pygame.sprites.text import (
+    TitleText,
+    PressToPlayText,
     LivesSprite,
     ScoreSprite,
     GameOverText,
@@ -21,24 +23,44 @@ from cowabunga.pygame.sprites.text import (
 class PygameRenderer:
     """Pygame renderer for CowabungaEnv."""
 
-    def __init__(self, seed: int | None = None):
+    def __init__(self, seed: int | None = None, menu: bool = True):
         """Initializes pygame renderer.
         Args:
             seed: seed to be passed to the env for random cow generation.
+            menu: whether pygame starts form main menu or runs directly.
         """
+        self.menu = menu
         self.seed = seed
         self.fps = settings.FPS
 
         pygame.init()
         self.screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
         pygame.display.set_caption("Cowabunga - Pygame Edition")
-        self.main_menu()
+        self.env = CowabungaEnv(self.seed)
+        self.run()
 
     def main_menu(self):
         """Renders main menu of the game."""
-        # TODO: implement
-        self.env = CowabungaEnv(self.seed)
-        self.run()
+        self.main_menu_texts = Group()
+        self.main_menu_texts.add(TitleText(), PressToPlayText())
+
+        # wait until a click to close
+        wait = True
+        while wait:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.close()
+                elif event.type == pygame.MOUSEBUTTONDOWN or (
+                    event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN
+                ):
+                    wait = False
+
+            self.paddle.get_key_input()
+            self.draw_screen()
+            self.main_menu_texts.draw(self.screen)
+            pygame.display.flip()
+
+            self.clock.tick(self.fps)
 
     def load_gamescreen(self):
         """Loads main game elements, paddle and cliffs groups."""
@@ -68,15 +90,16 @@ class PygameRenderer:
 
     def run(self):
         """Runs env loop in pygame."""
-        clock = pygame.time.Clock()
+        self.clock = pygame.time.Clock()
         self.load_gamescreen()
         running = True
+
+        self.main_menu()
 
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-
             # Player input
             self.paddle.get_key_input()
             self.env.step(
@@ -89,7 +112,7 @@ class PygameRenderer:
             self.draw_text()
             pygame.display.flip()
 
-            clock.tick(self.fps)
+            self.clock.tick(self.fps)
             if self.env.done:
                 running = False
                 self.gameover_screen()

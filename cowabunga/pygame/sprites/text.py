@@ -29,6 +29,32 @@ class TextSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.rect.topleft)
 
 
+class TitleText(TextSprite):
+    """Game over text sprite."""
+
+    def __init__(self):
+        text = "COWABUNGA"
+        font = pygame.font.Font(None, size=settings.HEIGHT // 5)
+        color = "yellow"
+        pos = (settings.WIDTH // 2, settings.HEIGHT * 0.4)
+        super().__init__(text, font, color, pos)
+        # center text
+        self.rect.centerx = settings.WIDTH // 2
+
+
+class PressToPlayText(TextSprite):
+    """Game over text sprite."""
+
+    def __init__(self):
+        text = "Press enter to start the game"
+        font = pygame.font.SysFont(None, settings.HEIGHT // 20, italic=True)
+        color = "white"
+        pos = (settings.WIDTH // 2, settings.HEIGHT * 0.55)
+        super().__init__(text, font, color, pos)
+        # center text
+        self.rect.centerx = settings.WIDTH // 2
+
+
 class LivesSprite(TextSprite):
     """Lives counter sprite."""
 
