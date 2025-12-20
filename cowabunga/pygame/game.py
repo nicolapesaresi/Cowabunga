@@ -1,5 +1,6 @@
 import pygame
 import random
+import sys
 import cowabunga.env.settings as settings
 from pygame.sprite import Group
 from cowabunga.env.env import CowabungaEnv
@@ -118,7 +119,7 @@ class PygameRenderer:
                 self.gameover_screen()
                 # when gameover screen is exited, reset env and go back to main menu
                 self.env.reset()
-                self.update_cows()  # removes leftover cow sprites before going back to menu
+                self.load_gamescreen()  # reloads sprite with new env
                 self.main_menu()
         self.close()
 
@@ -199,3 +200,4 @@ class PygameRenderer:
     def close():
         """Closes pygame."""
         pygame.quit()
+        sys.exit()
