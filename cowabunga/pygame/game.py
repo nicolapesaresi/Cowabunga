@@ -16,6 +16,7 @@ from cowabunga.pygame.sprites.sky import SkySprite
 from cowabunga.pygame.sprites.cloud import CloudSprite
 from cowabunga.pygame.sprites.button import LeaderboardButton, BackButton
 from cowabunga.pygame.sprites.leaderboard import LeaderboardScreen
+from cowabunga.pygame.sprites.name_textbox import TextBoxSprite
 from cowabunga.pygame.sprites.text import (
     TitleText,
     PressToPlayText,
@@ -40,6 +41,7 @@ class PygameRenderer:
         self.seed = seed
         self.fps = settings.FPS
         self.highscores_csv = Path(__file__).parent / ".." / "highscores.csv"
+        self.username = settings.DEFAULT_USERNAME
 
         pygame.init()
         self.screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
@@ -53,6 +55,8 @@ class PygameRenderer:
         main_menu_texts.add(TitleText(), PressToPlayText())
         buttons = Group()
         buttons.add(LeaderboardButton())
+        ui = Group()
+        ui.add(TextBoxSprite(text=self.username))
 
         # wait until a click to close
         wait = True
@@ -60,19 +64,25 @@ class PygameRenderer:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.close()
-                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                for element in ui.sprites():
+                    if isinstance(element, TextBoxSprite):
+                        element.handle_event(event)
+                        self.username = element.text
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     for button in buttons.sprites():
                         if isinstance(button, LeaderboardButton) and button.clicked(
                             event.pos
                         ):
                             self.leaderboard_page()
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                     wait = False
 
             self.paddle.get_key_input()
             self.draw_screen()
             main_menu_texts.draw(self.screen)
             buttons.draw(self.screen)
+            ui.update()
+            ui.draw(self.screen)
             pygame.display.flip()
 
             self.clock.tick(self.fps)
@@ -159,7 +169,7 @@ class PygameRenderer:
             self.clock.tick(self.fps)
             if self.env.done:
                 self.update_highscores(
-                    name=settings.DEFAULT_USERNAME,  # TODO: handle modifying this
+                    name=self.username,
                     points=self.env.score,
                     timestamp=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
                 )
