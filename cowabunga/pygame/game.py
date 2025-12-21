@@ -1,8 +1,11 @@
 import pygame
 import random
 import sys
+import pandas as pd
+from datetime import datetime
 import cowabunga.env.settings as settings
 from pygame.sprite import Group
+from pathlib import Path
 from cowabunga.env.env import CowabungaEnv
 from cowabunga.env.objects.cow import Cow
 from cowabunga.pygame.sprites.cow import CowSprite
@@ -11,6 +14,8 @@ from cowabunga.pygame.sprites.paddle import PaddleSprite
 from cowabunga.pygame.sprites.sea import FrontSeaSprite, BackSeaSprite
 from cowabunga.pygame.sprites.sky import SkySprite
 from cowabunga.pygame.sprites.cloud import CloudSprite
+from cowabunga.pygame.sprites.button import LeaderboardButton, BackButton
+from cowabunga.pygame.sprites.leaderboard import LeaderboardScreen
 from cowabunga.pygame.sprites.text import (
     TitleText,
     PressToPlayText,
@@ -34,6 +39,7 @@ class PygameRenderer:
         self.menu = menu
         self.seed = seed
         self.fps = settings.FPS
+        self.highscores_csv = Path(__file__).parent / ".." / "highscores.csv"
 
         pygame.init()
         self.screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
@@ -43,8 +49,10 @@ class PygameRenderer:
 
     def main_menu(self):
         """Renders main menu of the game."""
-        self.main_menu_texts = Group()
-        self.main_menu_texts.add(TitleText(), PressToPlayText())
+        main_menu_texts = Group()
+        main_menu_texts.add(TitleText(), PressToPlayText())
+        buttons = Group()
+        buttons.add(LeaderboardButton())
 
         # wait until a click to close
         wait = True
@@ -52,16 +60,50 @@ class PygameRenderer:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.close()
-                elif event.type == pygame.MOUSEBUTTONDOWN or (
-                    event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN
-                ):
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    for button in buttons.sprites():
+                        if isinstance(button, LeaderboardButton) and button.clicked(
+                            event.pos
+                        ):
+                            self.leaderboard_page()
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                     wait = False
 
             self.paddle.get_key_input()
             self.draw_screen()
-            self.main_menu_texts.draw(self.screen)
+            main_menu_texts.draw(self.screen)
+            buttons.draw(self.screen)
             pygame.display.flip()
 
+            self.clock.tick(self.fps)
+
+    def leaderboard_page(self):
+        """Opens leaderboard page."""
+        df = pd.read_csv(self.highscores_csv)
+        df["score"] = df["score"].astype(int)
+        df = df.sort_values("score", ascending=False).reset_index()
+
+        leaderboard = LeaderboardScreen(df)
+        buttons = Group()
+        buttons.add(BackButton())
+
+        wait = True
+        while wait:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.close()
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    for button in buttons.sprites():
+                        if isinstance(button, BackButton) and button.clicked(event.pos):
+                            wait = False
+                else:
+                    leaderboard.handle_event(event)
+
+            self.paddle.get_key_input()
+            self.draw_screen()
+            buttons.draw(self.screen)
+            leaderboard.draw(self.screen)
+            pygame.display.flip()
             self.clock.tick(self.fps)
 
     def load_gamescreen(self):
@@ -116,10 +158,15 @@ class PygameRenderer:
 
             self.clock.tick(self.fps)
             if self.env.done:
+                self.update_highscores(
+                    name=settings.DEFAULT_USERNAME,  # TODO: handle modifying this
+                    points=self.env.score,
+                    timestamp=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                )
                 self.gameover_screen()
                 # when gameover screen is exited, reset env and go back to main menu
                 self.env.reset()
-                self.load_gamescreen()  # reloads sprite with new env
+                self.load_gamescreen()  # reloads sprites with new env
                 self.main_menu()
         self.close()
 
@@ -177,12 +224,14 @@ class PygameRenderer:
     def gameover_screen(self):
         """Renders game over screen."""
         self.draw_screen()
-
-        self.game_over_texts = Group()
-        self.game_over_texts.add(
+        # buttons = Group()
+        # buttons.add(LeaderboardButton())
+        # buttons.draw(self.screen)
+        game_over_texts = Group()
+        game_over_texts.add(
             GameOverText(), FinalScoreSprite(self.env.score), PressToGoToMenuText()
         )
-        self.game_over_texts.draw(self.screen)
+        game_over_texts.draw(self.screen)
 
         pygame.display.flip()
         # wait until a click to close
@@ -191,9 +240,12 @@ class PygameRenderer:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.close()
-                elif event.type == pygame.MOUSEBUTTONDOWN or (
-                    event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN
-                ):
+                # elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                #     for button in buttons.sprites():
+                #         if isinstance(button, LeaderboardButton) and button.clicked(event.pos):
+                #             self.leaderboard_page()
+                #             wait = False
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                     wait = False
 
     @staticmethod
@@ -201,3 +253,14 @@ class PygameRenderer:
         """Closes pygame."""
         pygame.quit()
         sys.exit()
+
+    def update_highscores(self, name: str, points: int, timestamp: datetime):
+        """Updates highscores csv with latest score.
+        Args:
+            name: name of the user.
+            points: points scored.
+            timestamp: timestamp of the game.
+        """
+        highscores = pd.read_csv(self.highscores_csv)
+        highscores.loc[len(highscores)] = [name, points, timestamp]
+        highscores.to_csv(self.highscores_csv, index=False)
