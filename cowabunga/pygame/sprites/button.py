@@ -99,7 +99,7 @@ class InfoButton(RoundButton):
 
 
 class BackButton(RoundButton):
-    """ "Go back button class."""
+    """Go back button class."""
 
     def __init__(self):
         size = settings.WIDTH * 0.1
@@ -113,6 +113,26 @@ class BackButton(RoundButton):
             self.image = pygame.transform.scale(self.image, (self.width, self.height))
         except Exception as e:
             print(f"Unable to load image for BackButton: {e}")
+            self.image = pygame.Surface((self.width, self.height))
+            self.image.fill("red")
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
+
+class PauseButton(RoundButton):
+    """Pause button class."""
+
+    def __init__(self):
+        size = settings.WIDTH * 0.1
+        x = settings.WIDTH // 2 - size // 2
+        y = settings.HEIGHT // 2 - size
+        super().__init__(size, x, y)
+
+        self.asset = Path(__file__).parent / ".." / "assets" / "pause_icon.png"
+        try:
+            self.image = pygame.image.load(self.asset)
+            self.image = pygame.transform.scale(self.image, (self.width, self.height))
+        except Exception as e:
+            print(f"Unable to load image for PauseButton: {e}")
             self.image = pygame.Surface((self.width, self.height))
             self.image.fill("red")
         self.rect = self.image.get_rect(topleft=(self.x, self.y))

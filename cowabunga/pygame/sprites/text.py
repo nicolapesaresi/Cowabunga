@@ -119,3 +119,16 @@ class PressToGoToMenuText(TextSprite):
         super().__init__(text, font, color, pos)
         # center text
         self.rect.centerx = settings.WIDTH // 2
+
+
+class PauseText(TextSprite):
+    """Text that indicates how to go back to main menu."""
+
+    def __init__(self):
+        text = "Press the spacebar to continue"
+        font = pygame.font.SysFont(None, settings.HEIGHT // 20, italic=True)
+        color = "white"
+        pos = (settings.WIDTH // 2, settings.HEIGHT * 0.55)
+        super().__init__(text, font, color, pos)
+        # center text
+        self.rect.centerx = settings.WIDTH // 2

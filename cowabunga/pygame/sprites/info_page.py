@@ -12,7 +12,7 @@ class InfoPage:
         self.lines = [
             ("Commands", "header"),
             ("Left arrow / Right arrow - move paddle", "text"),
-            # ("Spacebar - pause game", "text"),
+            ("Spacebar - pause game", "text"),
             ("Credits", "header"),
             ("Original game and idea by Mark Andrade - AndradeArts", "text"),
             ("Pygame version created by Nicola Pesaresi", "text"),

@@ -14,7 +14,12 @@ from cowabunga.pygame.sprites.paddle import PaddleSprite
 from cowabunga.pygame.sprites.sea import FrontSeaSprite, BackSeaSprite
 from cowabunga.pygame.sprites.sky import SkySprite
 from cowabunga.pygame.sprites.cloud import CloudSprite
-from cowabunga.pygame.sprites.button import LeaderboardButton, BackButton, InfoButton
+from cowabunga.pygame.sprites.button import (
+    LeaderboardButton,
+    BackButton,
+    InfoButton,
+    PauseButton,
+)
 from cowabunga.pygame.sprites.leaderboard import LeaderboardScreen
 from cowabunga.pygame.sprites.info_page import InfoPage
 from cowabunga.pygame.sprites.name_textbox import TextBoxSprite
@@ -26,6 +31,7 @@ from cowabunga.pygame.sprites.text import (
     GameOverText,
     FinalScoreSprite,
     PressToGoToMenuText,
+    PauseText,
 )
 
 
@@ -180,6 +186,8 @@ class PygameRenderer:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    self.pause_game()
             # Player input
             self.paddle.get_key_input()
             self.env.step(
@@ -300,3 +308,23 @@ class PygameRenderer:
         highscores = pd.read_csv(self.highscores_csv)
         highscores.loc[len(highscores)] = [name, points, timestamp]
         highscores.to_csv(self.highscores_csv, index=False)
+
+    def pause_game(self):
+        """Pauses the game until spacebar press."""
+        self.draw_screen()
+        buttons = Group()
+        buttons.add(PauseButton())
+        buttons.draw(self.screen)
+        pause_texts = Group()
+        pause_texts.add(PauseText())
+        pause_texts.draw(self.screen)
+
+        pygame.display.flip()
+        # wait until a click to continue with game
+        wait = True
+        while wait:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.close()
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    wait = False
