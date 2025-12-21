@@ -62,7 +62,7 @@ class LeaderboardButton(RoundButton):
     def __init__(self):
         """Instantiates leaderboard button."""
         size = settings.WIDTH * 0.1
-        x = settings.WIDTH // 2 - size // 2
+        x = settings.WIDTH // 2 - size // 2 - size / 1.5
         y = settings.HEIGHT * 0.25 - size
         super().__init__(size, x, y)
 
@@ -72,6 +72,27 @@ class LeaderboardButton(RoundButton):
             self.image = pygame.transform.scale(self.image, (self.width, self.height))
         except Exception as e:
             print(f"Unable to load image for LeaderboardButton: {e}")
+            self.image = pygame.Surface((self.width, self.height))
+            self.image.fill("red")
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
+
+class InfoButton(RoundButton):
+    """Sprite for info button."""
+
+    def __init__(self):
+        """Instantiates info button."""
+        size = settings.WIDTH * 0.1
+        x = settings.WIDTH // 2 - size // 2 + size / 1.5
+        y = settings.HEIGHT * 0.25 - size
+        super().__init__(size, x, y)
+
+        self.asset = Path(__file__).parent / ".." / "assets" / "info_button.png"
+        try:
+            self.image = pygame.image.load(self.asset)
+            self.image = pygame.transform.scale(self.image, (self.width, self.height))
+        except Exception as e:
+            print(f"Unable to load image for InfoButton: {e}")
             self.image = pygame.Surface((self.width, self.height))
             self.image.fill("red")
         self.rect = self.image.get_rect(topleft=(self.x, self.y))

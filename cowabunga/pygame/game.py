@@ -14,8 +14,9 @@ from cowabunga.pygame.sprites.paddle import PaddleSprite
 from cowabunga.pygame.sprites.sea import FrontSeaSprite, BackSeaSprite
 from cowabunga.pygame.sprites.sky import SkySprite
 from cowabunga.pygame.sprites.cloud import CloudSprite
-from cowabunga.pygame.sprites.button import LeaderboardButton, BackButton
+from cowabunga.pygame.sprites.button import LeaderboardButton, BackButton, InfoButton
 from cowabunga.pygame.sprites.leaderboard import LeaderboardScreen
+from cowabunga.pygame.sprites.info_page import InfoPage
 from cowabunga.pygame.sprites.name_textbox import TextBoxSprite
 from cowabunga.pygame.sprites.text import (
     TitleText,
@@ -54,7 +55,7 @@ class PygameRenderer:
         main_menu_texts = Group()
         main_menu_texts.add(TitleText(), PressToPlayText())
         buttons = Group()
-        buttons.add(LeaderboardButton())
+        buttons.add(LeaderboardButton(), InfoButton())
         ui = Group()
         ui.add(TextBoxSprite(text=self.username))
 
@@ -74,6 +75,8 @@ class PygameRenderer:
                             event.pos
                         ):
                             self.leaderboard_page()
+                        if isinstance(button, InfoButton) and button.clicked(event.pos):
+                            self.info_page()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                     wait = False
 
@@ -113,6 +116,29 @@ class PygameRenderer:
             self.draw_screen()
             buttons.draw(self.screen)
             leaderboard.draw(self.screen)
+            pygame.display.flip()
+            self.clock.tick(self.fps)
+
+    def info_page(self):
+        """Opens info page."""
+        buttons = Group()
+        buttons.add(BackButton())
+        info = InfoPage()
+
+        wait = True
+        while wait:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.close()
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    for button in buttons.sprites():
+                        if isinstance(button, BackButton) and button.clicked(event.pos):
+                            wait = False
+
+            self.paddle.get_key_input()
+            self.draw_screen()
+            buttons.draw(self.screen)
+            info.draw(self.screen)
             pygame.display.flip()
             self.clock.tick(self.fps)
 
