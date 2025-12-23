@@ -63,6 +63,7 @@ class CowabungaEnv:
         if self.lives < 1:
             self.done = True
 
+        obs = self.get_state()
         return obs, self.done, info
 
     def check_collisions(self):
@@ -110,3 +111,14 @@ class CowabungaEnv:
                 new_cow.id = self.cow_id
                 self.cow_id += 1
                 self.cows.append(new_cow)
+
+    def get_state(self) -> dict:
+        """Returns the current state of the game."""
+        state = {}
+        state["score"] = self.score
+        state["lives"] = self.lives
+        state["paddle_x"] = self.paddle.x + self.paddle.width / 2
+        state["cows"] = [
+            (cow.x + cow.width / 2, cow.y + cow.height / 2) for cow in self.cows
+        ]
+        return state
