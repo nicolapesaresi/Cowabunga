@@ -1,6 +1,6 @@
 # env settings
-WIDTH = 400
-HEIGHT = 225
+WIDTH = 1600
+HEIGHT = 900
 # game settings
 LIVES = 3
 NEW_COW_PROB = 0.003
