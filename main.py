@@ -3,6 +3,7 @@ import asyncio
 import pygame
 import numpy  # needed here, otherwise pygbag breaks  # noqa: F401
 import cowabunga.env.settings as settings
+from datetime import datetime
 from cowabunga.pygame.states import States
 from cowabunga.pygame.game import PygameRenderer
 
@@ -27,6 +28,9 @@ async def main():
         elif render_state == States.INFO:
             render_state = game.info_page()
 
+        elif render_state == States.LEADERBOARD:
+            render_state = game.leadernoard_page()
+
         elif render_state == States.GAMEOVER:
             render_state = game.gameover_screen()
 
@@ -50,6 +54,15 @@ async def main():
             # draw new screen
             game.draw_screen()
             game.draw_text()
+
+            # check game finished
+            if game.env.done:
+                game.update_highscores(
+                    name=game.username,
+                    points=game.env.score,
+                    timestamp=datetime.now(),
+                )
+                render_state = States.GAMEOVER
         pygame.display.flip()
         game.clock.tick(settings.FPS)
         if game.env.done:

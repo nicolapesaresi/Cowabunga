@@ -1,11 +1,11 @@
 import pygame
 import random
 import sys
-
-# import pandas as pd
+import json
 from pygame.sprite import Group
 import cowabunga.env.settings as settings
 from pathlib import Path
+from datetime import datetime
 from cowabunga.env.env import CowabungaEnv
 from cowabunga.env.objects.cow import Cow
 from cowabunga.pygame.sprites.cow import CowSprite
@@ -23,8 +23,15 @@ from cowabunga.pygame.main_menu import MainMenu
 from cowabunga.pygame.gameover_screen import GameOver
 from cowabunga.pygame.pause_screen import PauseScreen
 from cowabunga.pygame.info_page import InfoPage
-# from cowabunga.pygame.sprites.leaderboard import LeaderboardScreen
-# imports: at the moment pandas breaks pygbag, leaderboard page excluded
+from cowabunga.pygame.leaderboard import LeaderboardScreen
+
+# importing js only in browser mode
+try:
+    from js import window
+
+    BROWSER_MODE = True
+except ImportError:
+    BROWSER_MODE = False
 
 
 class PygameRenderer:
@@ -48,7 +55,7 @@ class PygameRenderer:
             self.screen = screen
         self.seed = seed
         self.fps = settings.FPS
-        self.highscores_csv = Path(__file__).parent / ".." / "highscores.csv"
+        self.highscores_json = Path(__file__).parent / ".." / "highscores.json"
         self.username = settings.DEFAULT_USERNAME
 
         self.env = CowabungaEnv(self.seed)
@@ -85,34 +92,20 @@ class PygameRenderer:
             self.menu = None
         return render_state
 
-    #     def leaderboard_page(self):
-    #         """Opens leaderboard page."""
-    #         df = pd.read_csv(self.highscores_csv)
-    #         df["score"] = df["score"].astype(int)
-    #         df = df.sort_values("score", ascending=False).reset_index()
+    def leadernoard_page(self):
+        """Renders leaderboard page."""
+        if not self.leaderboard:
+            scores = self.load_highscores()
+            self.leaderboard = LeaderboardScreen(self.paddle, scores)
+        self.leaderboard.update()
+        self.draw_screen(move_background=True)
+        self.leaderboard.draw(self.screen)
+        render_state = self.leaderboard.handle_events()
 
-    #         leaderboard = LeaderboardScreen(df)
-    #         buttons = Group()
-    #         buttons.add(BackButton())
-
-    #         wait = True
-    #         while wait:
-    #             for event in pygame.event.get():
-    #                 if event.type == pygame.QUIT:
-    #                     self.close()
-    #                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-    #                     for button in buttons.sprites():
-    #                         if isinstance(button, BackButton) and button.clicked(event.pos):
-    #                             wait = False
-    #                 else:
-    #                     leaderboard.handle_event(event)
-
-    #             self.paddle.get_key_input()
-    #             self.draw_screen()
-    #             buttons.draw(self.screen)
-    #             leaderboard.draw(self.screen)
-    #             pygame.display.flip()
-    #             self.clock.tick(self.fps)
+        # if leaving leaderboard, destroy it to recreate next time
+        if render_state != States.LEADERBOARD:
+            self.leaderboard = None
+        return render_state
 
     def info_page(self):
         """Renders info page."""
@@ -173,6 +166,9 @@ class PygameRenderer:
             elif render_state == States.INFO:
                 render_state = self.info_page()
 
+            elif render_state == States.LEADERBOARD:
+                render_state = self.leadernoard_page()
+
             elif render_state == States.GAMEOVER:
                 render_state = self.gameover_screen()
 
@@ -181,7 +177,6 @@ class PygameRenderer:
 
             elif render_state == States.GAME:
                 # main game logic
-
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         render_state = States.CLOSE
@@ -199,15 +194,16 @@ class PygameRenderer:
                 self.draw_screen()
                 self.draw_text()
 
+                # check game finished
+                if self.env.done:
+                    self.update_highscores(
+                        name=self.username,
+                        points=self.env.score,
+                        timestamp=datetime.now(),
+                    )
+                    render_state = States.GAMEOVER
             pygame.display.flip()
             self.clock.tick(self.fps)
-            if self.env.done:
-                # self.update_highscores(
-                #     name=self.username,
-                #     points=self.env.score,
-                #     timestamp=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                # )
-                render_state = States.GAMEOVER
         self.close()
 
     def update_cows(self):
@@ -284,23 +280,6 @@ class PygameRenderer:
             self.load_gamescreen()
         return render_state
 
-    @staticmethod
-    def close():
-        """Closes pygame."""
-        pygame.quit()
-        sys.exit()
-
-    #     def update_highscores(self, name: str, points: int, timestamp: datetime):
-    #         """Updates highscores csv with latest score.
-    #         Args:
-    #             name: name of the user.
-    #             points: points scored.
-    #             timestamp: timestamp of the game.
-    #         """
-    #         highscores = pd.read_csv(self.highscores_csv)
-    #         highscores.loc[len(highscores)] = [name, points, timestamp]
-    #         highscores.to_csv(self.highscores_csv, index=False)
-
     def pause_game(self):
         """Pauses the game until spacebar press."""
         if not self.pause:
@@ -315,3 +294,37 @@ class PygameRenderer:
         if render_state != States.PAUSE:
             self.pause = None
         return render_state
+
+    @staticmethod
+    def close():
+        """Closes pygame."""
+        pygame.quit()
+        sys.exit()
+
+    def load_highscores(self):
+        """Loads highscores from json file or browser localStorage."""
+        if BROWSER_MODE:
+            data = window.localStorage.getItem("highscores")
+            if data:
+                return json.loads(data)
+        with open(self.highscores_json, "r") as f:
+            return json.load(f)
+
+    def save_highscores(self, scores: dict):
+        """Saves new highscores to json file or browser localStorage."""
+        if BROWSER_MODE:
+            window.localStorage.setItem("highscores", json.dumps(scores))
+        else:
+            with open(self.highscores_json, "w") as f:
+                json.dump(scores, f, indent=2)
+
+    def update_highscores(self, name: str, points: int, timestamp: datetime):
+        highscores = self.load_highscores()
+        highscores.append(
+            {
+                "name": name,
+                "score": int(points),
+                "timestamp": timestamp.strftime("%Y-%m-%d %H:%M"),
+            }
+        )
+        self.save_highscores(highscores)
