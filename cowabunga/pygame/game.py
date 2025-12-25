@@ -14,9 +14,6 @@ from cowabunga.pygame.sprites.paddle import PaddleSprite
 from cowabunga.pygame.sprites.sea import FrontSeaSprite, BackSeaSprite
 from cowabunga.pygame.sprites.sky import SkySprite
 from cowabunga.pygame.sprites.cloud import CloudSprite
-
-# from cowabunga.pygame.sprites.leaderboard import LeaderboardScreen
-from cowabunga.pygame.info_page import InfoPage
 from cowabunga.pygame.sprites.text import (
     LivesSprite,
     ScoreSprite,
@@ -25,6 +22,8 @@ from cowabunga.pygame.states import States
 from cowabunga.pygame.main_menu import MainMenu
 from cowabunga.pygame.gameover_screen import GameOver
 from cowabunga.pygame.pause_screen import PauseScreen
+from cowabunga.pygame.info_page import InfoPage
+# from cowabunga.pygame.sprites.leaderboard import LeaderboardScreen
 # imports: at the moment pandas breaks pygbag, leaderboard page excluded
 
 
@@ -77,7 +76,7 @@ class PygameRenderer:
             self.menu = MainMenu(self.paddle, self.username)
 
         self.menu.update()
-        self.draw_screen()
+        self.draw_screen(move_background=True)
         self.menu.draw(self.screen)
         render_state, self.username = self.menu.handle_events()
 
@@ -232,8 +231,8 @@ class PygameRenderer:
         """Updates and generates new clouds."""
         to_remove = []
         for cloud in list(self.clouds):
-            if (int(cloud.rect.x) > settings.WIDTH and cloud.speed > 0) or (
-                int(cloud.rect.x) + 2 * cloud.width < 0 and cloud.speed < 0
+            if (int(cloud.rect.x) > settings.WIDTH and cloud.speed >= 0) or (
+                int(cloud.rect.x) + cloud.width < 0 and cloud.speed <= 0
             ):
                 to_remove.append(cloud)
         self.clouds.update()
