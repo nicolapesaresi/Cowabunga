@@ -1,9 +1,9 @@
 import pygame
 import cowabunga.env.settings as settings
-from cowabunga.pygame.sprites.text import TextSprite
-from cowabunga.pygame.sprites.paddle import PaddleSprite
-from cowabunga.pygame.states import States
-from cowabunga.pygame.sprites.button import BackButton
+from cowabunga.py_game.sprites.text import TextSprite
+from cowabunga.py_game.sprites.paddle import PaddleSprite
+from cowabunga.py_game.states import States
+from cowabunga.py_game.sprites.button import BackButton
 from pygame.sprite import Group
 
 

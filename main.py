@@ -1,11 +1,11 @@
 import asyncio
+import numpy  # needed here, otherwise pygbag breaks  # noqa: F401
 
 import pygame
-import numpy  # needed here, otherwise pygbag breaks  # noqa: F401
 import cowabunga.env.settings as settings
 from datetime import datetime
-from cowabunga.pygame.states import States
-from cowabunga.pygame.game import PygameRenderer
+from cowabunga.py_game.states import States
+from cowabunga.py_game.game import PygameRenderer
 
 pygame.init()
 screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))

@@ -1,10 +1,10 @@
 import pygame
 from pygame.sprite import Group
-from cowabunga.pygame.sprites.text import TitleText, PressToPlayText
-from cowabunga.pygame.sprites.name_textbox import TextBoxSprite
-from cowabunga.pygame.sprites.button import LeaderboardButton, InfoButton
-from cowabunga.pygame.sprites.paddle import PaddleSprite
-from cowabunga.pygame.states import States
+from cowabunga.py_game.sprites.text import TitleText, PressToPlayText
+from cowabunga.py_game.sprites.name_textbox import TextBoxSprite
+from cowabunga.py_game.sprites.button import LeaderboardButton, InfoButton
+from cowabunga.py_game.sprites.paddle import PaddleSprite
+from cowabunga.py_game.states import States
 
 
 class MainMenu:

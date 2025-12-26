@@ -1,8 +1,8 @@
 import pygame
 from pygame.sprite import Group
-from cowabunga.pygame.sprites.text import PauseText
-from cowabunga.pygame.sprites.button import PauseButton
-from cowabunga.pygame.states import States
+from cowabunga.py_game.sprites.text import PauseText
+from cowabunga.py_game.sprites.button import PauseButton
+from cowabunga.py_game.states import States
 
 
 class PauseScreen:

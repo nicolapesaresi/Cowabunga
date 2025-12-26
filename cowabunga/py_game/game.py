@@ -8,22 +8,22 @@ from pathlib import Path
 from datetime import datetime
 from cowabunga.env.env import CowabungaEnv
 from cowabunga.env.objects.cow import Cow
-from cowabunga.pygame.sprites.cow import CowSprite
-from cowabunga.pygame.sprites.cliff import CliffSprite
-from cowabunga.pygame.sprites.paddle import PaddleSprite
-from cowabunga.pygame.sprites.sea import FrontSeaSprite, BackSeaSprite
-from cowabunga.pygame.sprites.sky import SkySprite
-from cowabunga.pygame.sprites.cloud import CloudSprite
-from cowabunga.pygame.sprites.text import (
+from cowabunga.py_game.sprites.cow import CowSprite
+from cowabunga.py_game.sprites.cliff import CliffSprite
+from cowabunga.py_game.sprites.paddle import PaddleSprite
+from cowabunga.py_game.sprites.sea import FrontSeaSprite, BackSeaSprite
+from cowabunga.py_game.sprites.sky import SkySprite
+from cowabunga.py_game.sprites.cloud import CloudSprite
+from cowabunga.py_game.sprites.text import (
     LivesSprite,
     ScoreSprite,
 )
-from cowabunga.pygame.states import States
-from cowabunga.pygame.main_menu import MainMenu
-from cowabunga.pygame.gameover_screen import GameOver
-from cowabunga.pygame.pause_screen import PauseScreen
-from cowabunga.pygame.info_page import InfoPage
-from cowabunga.pygame.leaderboard import LeaderboardScreen
+from cowabunga.py_game.states import States
+from cowabunga.py_game.main_menu import MainMenu
+from cowabunga.py_game.gameover_screen import GameOver
+from cowabunga.py_game.pause_screen import PauseScreen
+from cowabunga.py_game.info_page import InfoPage
+from cowabunga.py_game.leaderboard import LeaderboardScreen
 
 # importing js only in browser mode
 try:

@@ -1,11 +1,11 @@
 import pygame
 from pygame.sprite import Group
-from cowabunga.pygame.sprites.text import (
+from cowabunga.py_game.sprites.text import (
     GameOverText,
     FinalScoreSprite,
     PressToGoToMenuText,
 )
-from cowabunga.pygame.states import States
+from cowabunga.py_game.states import States
 
 
 class GameOver:

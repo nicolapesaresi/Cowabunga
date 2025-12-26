@@ -13,6 +13,8 @@ pygame = "^2.6.1"
 [tool.poetry.group.dev.dependencies]
 pygbag = "^0.9.2"
 pre-commit = "^4.5.0"
+asyncio = "^4.0.0"
+ghp-import = "^2.1.0"
 
 [build-system]
 requires = ["poetry-core"]
