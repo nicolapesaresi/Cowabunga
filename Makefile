@@ -3,7 +3,7 @@
 REPO_URL := $(shell git config --get remote.origin.url)
 
 APP_NAME = 'Cowabunga'
-ICON = 'cowabunga/pygame/assets/favicon.png'
+ICON = 'cowabunga/py_game/assets/favicon.png'
 
 CNAME = 
 
