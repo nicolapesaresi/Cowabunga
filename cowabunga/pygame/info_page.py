@@ -1,13 +1,24 @@
 import pygame
+from pygame.sprite import Group
 import cowabunga.env.settings as settings
+from cowabunga.pygame.states import States
 from cowabunga.pygame.sprites.text import TextSprite
+from cowabunga.pygame.sprites.paddle import PaddleSprite
+from cowabunga.pygame.sprites.button import BackButton
 
 
 class InfoPage:
     """Page displaying instructions and credits."""
 
-    def __init__(self):
-        """Instantiates InfoPage class."""
+    def __init__(self, paddle: PaddleSprite):
+        """Instantiates InfoPage class.
+        Args:
+            paddle: paddle sprite to be rendered on info page.
+        """
+        self.paddle = paddle
+        self.buttons = Group()
+        self.buttons.add(BackButton())
+
         # lines are tuples (text, style)
         self.lines = [
             ("Commands", "header"),
@@ -35,9 +46,28 @@ class InfoPage:
             sprite.rect.centerx = settings.WIDTH // 2
             self.sprites.add(sprite)
 
+    def update(self):
+        """Updates according to paddle input."""
+        self.paddle.get_key_input()
+
     def draw(self, screen: pygame.Surface):
-        """Draw all lines centered.
+        """Draw all lines centered and buttons.
         Args:
             screen: pygame surface to draw on.
         """
         self.sprites.draw(screen)
+        self.buttons.draw(screen)
+
+    def handle_events(self) -> States:
+        """Handles info page events.
+        Returns:
+            render_state: outcome of event handling.
+        """
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return States.CLOSE
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                for button in self.buttons.sprites():
+                    if isinstance(button, BackButton) and button.clicked(event.pos):
+                        return States.MENU
+        return States.INFO

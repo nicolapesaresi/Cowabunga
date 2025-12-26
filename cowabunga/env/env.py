@@ -3,7 +3,7 @@ import cowabunga.env.settings as settings
 from cowabunga.env.actions import Action
 from cowabunga.env.objects.cow import Cow
 from cowabunga.env.objects.paddle import Paddle
-from cowabunga.env.objects.cliff import RightCliff, LeftCliff
+from cowabunga.env.objects.cliff import Cliff, RightCliff, LeftCliff
 
 
 class CowabungaEnv:
@@ -32,7 +32,7 @@ class CowabungaEnv:
         self.cow_id = (
             0  # needed in pygame to update cow sprites. gets updated at every new cow
         )
-        self.cliffs: list[LeftCliff, RightCliff] = [LeftCliff(), RightCliff()]
+        self.cliffs: list[Cliff] = [LeftCliff(), RightCliff()]
         self.paddle = Paddle()
 
     def step(self, action: Action):

@@ -47,7 +47,7 @@ Use Poetry to install the project dependencies:
 ```
 poetry install
 ```
-Now you can run the game with:
+Now you can run the game on desktop with:
 ```
-python -m cowabunga
+python cowabunga/scripts/run_pygame.py
 ```

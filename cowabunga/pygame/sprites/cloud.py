@@ -1,5 +1,6 @@
 import pygame
 import random
+import numpy as np
 import cowabunga.env.settings as settings
 from pathlib import Path
 
@@ -69,4 +70,5 @@ class CloudSprite(pygame.sprite.Sprite):
 
     def update(self):
         """Updates cloud sprite according to its movement."""
-        self.rect.x += self.speed
+        # adding +- 1 solves a bug with clouds stopping on browser
+        self.rect.x += self.speed + np.sign(self.speed)
