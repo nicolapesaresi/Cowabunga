@@ -39,4 +39,8 @@ class GameOver:
                 return States.CLOSE
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 return States.MENU
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                for text in self.game_over_texts.sprites():
+                    if hasattr(text, "clicked") and text.clicked(event.pos):
+                        return States.MENU
         return States.GAMEOVER

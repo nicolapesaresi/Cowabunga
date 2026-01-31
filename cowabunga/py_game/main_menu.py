@@ -74,6 +74,9 @@ class MainMenu:
                         return States.LEADERBOARD, self.username
                     if isinstance(button, InfoButton) and button.clicked(event.pos):
                         return States.INFO, self.username
+                for text in self.main_menu_texts.sprites():
+                    if hasattr(text, "clicked") and text.clicked(event.pos):
+                        return States.GAME, self.username
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 return States.GAME, self.username
         return States.MENU, self.username

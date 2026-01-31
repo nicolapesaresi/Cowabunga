@@ -46,13 +46,22 @@ class PressToPlayText(TextSprite):
     """Text that indiucates how to start a game."""
 
     def __init__(self):
-        text = "Press enter to start a game"
+        text = "Click or press enter to start a game"
         font = pygame.font.SysFont(None, settings.HEIGHT // 20, italic=True)
         color = "white"
         pos = (settings.WIDTH // 2, settings.HEIGHT * 0.55)
         super().__init__(text, font, color, pos)
         # center text
         self.rect.centerx = settings.WIDTH // 2
+
+    def clicked(self, click_pos: tuple[int, int]) -> bool:
+        """Check that a click occurred on the text.
+        Args:
+            click_pos: coords of the click (x, y).
+        Returns
+            (bool): whether the text has been clicked.
+        """
+        return self.rect.collidepoint(click_pos)
 
 
 class LivesSprite(TextSprite):
@@ -112,13 +121,22 @@ class PressToGoToMenuText(TextSprite):
     """Text that indicates how to go back to main menu."""
 
     def __init__(self):
-        text = "Press enter to retry"
+        text = "Click or press enter to retry"
         font = pygame.font.SysFont(None, settings.HEIGHT // 20, italic=True)
         color = "white"
         pos = (settings.WIDTH // 2, settings.HEIGHT * 0.65)
         super().__init__(text, font, color, pos)
         # center text
         self.rect.centerx = settings.WIDTH // 2
+
+    def clicked(self, click_pos: tuple[int, int]) -> bool:
+        """Check that a click occurred on the text.
+        Args:
+            click_pos: coords of the click (x, y).
+        Returns
+            (bool): whether the text has been clicked.
+        """
+        return self.rect.collidepoint(click_pos)
 
 
 class PauseText(TextSprite):
