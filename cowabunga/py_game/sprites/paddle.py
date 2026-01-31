@@ -28,11 +28,21 @@ class PaddleSprite(pygame.sprite.Sprite):
         self.rect.y = self.paddle.y
 
     def get_key_input(self) -> Action:
-        """Get key input for paddle movement."""
+        """Get key input for paddle movement. Keyboard and click supported."""
+        # keyboard input (priority)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             return Action.LEFT
         elif keys[pygame.K_RIGHT]:
             return Action.RIGHT
-        else:
-            return Action.NOOP
+
+        # mouse input
+        mouse_buttons = pygame.mouse.get_pressed()
+        if mouse_buttons[0]:  # left mouse button
+            mouse_x, _ = pygame.mouse.get_pos()
+            if mouse_x < self.paddle.x + (self.paddle.width // 2):
+                return Action.LEFT
+            else:
+                return Action.RIGHT
+
+        return Action.NOOP
