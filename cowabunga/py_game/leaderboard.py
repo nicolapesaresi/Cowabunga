@@ -5,6 +5,7 @@ from cowabunga.py_game.sprites.paddle import PaddleSprite
 from cowabunga.py_game.states import States
 from cowabunga.py_game.sprites.button import BackButton
 from pygame.sprite import Group
+from cowabunga.env.actions import Action
 
 
 class LeaderboardRow(TextSprite):
@@ -71,9 +72,22 @@ class LeaderboardScreen:
             len(self.rows) * self.row_height - self.visible_rows * self.row_height,
         )
 
+        self.frames_since_last_move = 0  # for paddle movement
+
     def update(self):
         """Updates leaderboard page."""
-        self.paddle.get_key_input()
+        # move paddle in page
+        action = self.paddle.get_key_input()
+        if (
+            action in (Action.LEFT, Action.RIGHT)
+            and self.frames_since_last_move >= settings.ACTION_COOLDOWN
+        ):
+            self.paddle.paddle.move(action)
+            self.frames_since_last_move = 0
+        else:
+            self.paddle.paddle.animate_move()
+        self.frames_since_last_move += 1
+
         # scrolling
         self.scroll_y = max(-self.max_scroll, min(0, self.scroll_y))
         for row in self.rows:

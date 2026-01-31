@@ -184,9 +184,9 @@ class PygameRenderer:
                         render_state = States.PAUSE
 
                 # player input and env update
-                self.paddle.get_key_input()
+                action = self.paddle.get_key_input()
                 self.env.step(
-                    0
+                    action
                 )  # TODO: this only supports human player actions, change to support Agent
                 self.update_cows()
 
@@ -255,6 +255,7 @@ class PygameRenderer:
         self.back_sea.draw(self.screen)
         self.cliffs.draw(self.screen)
         self.cows.draw(self.screen)
+        self.player.update()
         self.player.draw(self.screen)
         self.front_sea.draw(self.screen)
 

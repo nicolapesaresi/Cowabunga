@@ -20,6 +20,7 @@ class CowabungaEnv:
 
         self.new_cow_prob = settings.NEW_COW_PROB
         self.max_cows_on_screen = settings.MAX_COWS_ON_SCREEN
+        self.cooldown = settings.ACTION_COOLDOWN
         self.reset()
 
     def reset(self):
@@ -34,6 +35,7 @@ class CowabungaEnv:
         )
         self.cliffs: list[Cliff] = [LeftCliff(), RightCliff()]
         self.paddle = Paddle()
+        self.frames_since_last_move = self.cooldown + 1  # allows moving
 
     def step(self, action: Action):
         """Updates the environment after one instant of time.
@@ -45,8 +47,15 @@ class CowabungaEnv:
             info: additional info.
         """
         # handle action
-        if action in (Action.LEFT, Action.RIGHT):
+        if (
+            action in (Action.LEFT, Action.RIGHT)
+            and self.frames_since_last_move >= self.cooldown
+        ):
             self.paddle.move(action)
+            self.frames_since_last_move = 0
+        else:
+            self.frames_since_last_move += 1
+            self.paddle.animate_move()
 
         ## update env
         # check collisions

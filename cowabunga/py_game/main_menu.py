@@ -5,6 +5,8 @@ from cowabunga.py_game.sprites.name_textbox import TextBoxSprite
 from cowabunga.py_game.sprites.button import LeaderboardButton, InfoButton
 from cowabunga.py_game.sprites.paddle import PaddleSprite
 from cowabunga.py_game.states import States
+from cowabunga.env.actions import Action
+from cowabunga.env.settings import ACTION_COOLDOWN
 
 
 class MainMenu:
@@ -25,9 +27,21 @@ class MainMenu:
         self.ui = Group()
         self.ui.add(TextBoxSprite(text=self.username))
 
+        self.frames_since_last_move = 0  # for paddle movement in menù
+
     def update(self):
         """Updates main menù."""
-        self.paddle.get_key_input()
+        # move paddle in menù
+        action = self.paddle.get_key_input()
+        if (
+            action in (Action.LEFT, Action.RIGHT)
+            and self.frames_since_last_move >= ACTION_COOLDOWN
+        ):
+            self.paddle.paddle.move(action)
+            self.frames_since_last_move = 0
+        else:
+            self.paddle.paddle.animate_move()
+        self.frames_since_last_move += 1
         self.ui.update()
 
     def draw(self, screen: pygame.Surface):

@@ -12,7 +12,7 @@ class Cow(Rect):
         x = -width
         y = settings.left_cliff_height - height
         super().__init__(x, y, width, height)
-        self.velocity = [settings.WIDTH / 590, 0]
+        self.velocity = [settings.WIDTH / 610, 0]
 
         self.bounces = 0
 

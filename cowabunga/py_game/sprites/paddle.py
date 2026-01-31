@@ -27,11 +27,12 @@ class PaddleSprite(pygame.sprite.Sprite):
         self.rect.x = self.paddle.x
         self.rect.y = self.paddle.y
 
-    def get_key_input(self):
+    def get_key_input(self) -> Action:
         """Get key input for paddle movement."""
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            self.paddle.move(Action.LEFT)
-        if keys[pygame.K_RIGHT]:
-            self.paddle.move(Action.RIGHT)
-        self.update()
+            return Action.LEFT
+        elif keys[pygame.K_RIGHT]:
+            return Action.RIGHT
+        else:
+            return Action.NOOP

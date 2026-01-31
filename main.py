@@ -47,8 +47,8 @@ async def main():
                     render_state = States.PAUSE
 
             # player input and env update
-            game.paddle.get_key_input()
-            game.env.step(0)
+            action = game.paddle.get_key_input()
+            game.env.step(action)
             game.update_cows()
 
             # draw new screen
