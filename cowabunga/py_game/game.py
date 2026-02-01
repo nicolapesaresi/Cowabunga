@@ -57,6 +57,7 @@ class PygameRenderer:
         self.fps = settings.FPS
         self.highscores_json = Path(__file__).parent / ".." / "highscores.json"
         self.username = settings.DEFAULT_USERNAME
+        self.commands = settings.DEFAULT_COMMANDS
 
         self.env = CowabungaEnv(self.seed)
 
@@ -80,7 +81,7 @@ class PygameRenderer:
     def main_menu(self):
         """Renders main menu of the game."""
         if not self.menu:
-            self.menu = MainMenu(self.paddle, self.username)
+            self.menu = MainMenu(self.commands, self.paddle, self.username)
 
         self.menu.update()
         self.draw_screen(move_background=True)
@@ -96,7 +97,7 @@ class PygameRenderer:
         """Renders leaderboard page."""
         if not self.leaderboard:
             scores = self.load_highscores()
-            self.leaderboard = LeaderboardScreen(self.paddle, scores)
+            self.leaderboard = LeaderboardScreen(self.commands, self.paddle, scores)
         self.leaderboard.update()
         self.draw_screen(move_background=True)
         self.leaderboard.draw(self.screen)
@@ -110,7 +111,7 @@ class PygameRenderer:
     def info_page(self):
         """Renders info page."""
         if not self.info:
-            self.info = InfoPage(self.paddle)
+            self.info = InfoPage(self.commands, self.paddle)
 
         self.info.update()
         self.draw_screen()
@@ -184,7 +185,7 @@ class PygameRenderer:
                         render_state = States.PAUSE
 
                 # player input and env update
-                action = self.paddle.get_key_input()
+                action = self.paddle.get_key_input(self.commands)
                 self.env.step(
                     action
                 )  # TODO: this only supports human player actions, change to support Agent

@@ -1,3 +1,5 @@
+from cowabunga.py_game.commands import CommandModes
+
 # env settings
 WIDTH = 1600
 HEIGHT = 900
@@ -29,3 +31,5 @@ MAX_CLOUDS_ON_SCREEN = 7
 NEW_CLOUD_PROB = 0.005
 
 DEFAULT_USERNAME = "Cowboy1"
+
+DEFAULT_COMMANDS = CommandModes.DRAG

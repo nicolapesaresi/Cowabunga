@@ -55,7 +55,8 @@ class CowabungaEnv:
             self.frames_since_last_move = 0
         else:
             self.frames_since_last_move += 1
-            self.paddle.animate_move()
+            if action != Action.NOOP_DRAG:
+                self.paddle.animate_move()
 
         ## update env
         # check collisions

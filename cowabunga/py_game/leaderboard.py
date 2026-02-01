@@ -6,6 +6,7 @@ from cowabunga.py_game.states import States
 from cowabunga.py_game.sprites.button import BackButton
 from pygame.sprite import Group
 from cowabunga.env.actions import Action
+from cowabunga.py_game.commands import CommandModes
 
 
 class LeaderboardRow(TextSprite):
@@ -32,11 +33,14 @@ class LeaderboardRow(TextSprite):
 class LeaderboardScreen:
     """Handles leaderboard screen for Cowabunga."""
 
-    def __init__(self, paddle: PaddleSprite, scores: list[dict]):
+    def __init__(
+        self, commands: CommandModes, paddle: PaddleSprite, scores: list[dict]
+    ):
         """Instantiates main menù elements.
         Args:
             paddle: paddle sprite from pygame renderer.
         """
+        self.commands = commands
         self.paddle = paddle
         self.scores = sorted(
             scores,
@@ -77,7 +81,7 @@ class LeaderboardScreen:
     def update(self):
         """Updates leaderboard page."""
         # move paddle in page
-        action = self.paddle.get_key_input()
+        action = self.paddle.get_key_input(self.commands)
         if (
             action in (Action.LEFT, Action.RIGHT)
             and self.frames_since_last_move >= settings.ACTION_COOLDOWN
@@ -85,7 +89,8 @@ class LeaderboardScreen:
             self.paddle.paddle.move(action)
             self.frames_since_last_move = 0
         else:
-            self.paddle.paddle.animate_move()
+            if action != Action.NOOP_DRAG:
+                self.paddle.paddle.animate_move()
         self.frames_since_last_move += 1
 
         # scrolling

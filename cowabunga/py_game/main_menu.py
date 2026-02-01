@@ -6,20 +6,25 @@ from cowabunga.py_game.sprites.button import LeaderboardButton, InfoButton
 from cowabunga.py_game.sprites.paddle import PaddleSprite
 from cowabunga.py_game.states import States
 from cowabunga.env.actions import Action
+from cowabunga.py_game.commands import CommandModes
 from cowabunga.env.settings import ACTION_COOLDOWN
 
 
 class MainMenu:
     """Handles main menù for Cowabunga."""
 
-    def __init__(self, paddle: PaddleSprite, default_username: str):
+    def __init__(
+        self, commands: CommandModes, paddle: PaddleSprite, default_username: str
+    ):
         """Instantiates main menù elements.
         Args:
+            commands: commands mode for paddle
             paddle: paddle sprite from pygame renderer.
             default_username: username that is initially displayed in the menù.
         """
         self.username = default_username
         self.paddle = paddle
+        self.commands = commands
         self.main_menu_texts = Group()
         self.main_menu_texts.add(TitleText(), PressToPlayText())
         self.buttons = Group()
@@ -32,7 +37,7 @@ class MainMenu:
     def update(self):
         """Updates main menù."""
         # move paddle in menù
-        action = self.paddle.get_key_input()
+        action = self.paddle.get_key_input(self.commands)
         if (
             action in (Action.LEFT, Action.RIGHT)
             and self.frames_since_last_move >= ACTION_COOLDOWN
@@ -40,7 +45,8 @@ class MainMenu:
             self.paddle.paddle.move(action)
             self.frames_since_last_move = 0
         else:
-            self.paddle.paddle.animate_move()
+            if action != Action.NOOP_DRAG:
+                self.paddle.paddle.animate_move()
         self.frames_since_last_move += 1
         self.ui.update()
 

@@ -7,24 +7,27 @@ from cowabunga.py_game.sprites.paddle import PaddleSprite
 from cowabunga.py_game.sprites.button import BackButton
 from cowabunga.env.actions import Action
 from cowabunga.env.settings import ACTION_COOLDOWN
+from cowabunga.py_game.commands import CommandModes
 
 
 class InfoPage:
     """Page displaying instructions and credits."""
 
-    def __init__(self, paddle: PaddleSprite):
+    def __init__(self, commands: CommandModes, paddle: PaddleSprite):
         """Instantiates InfoPage class.
         Args:
+            commands: command mode for the paddle.
             paddle: paddle sprite to be rendered on info page.
         """
         self.paddle = paddle
+        self.commands = commands
         self.buttons = Group()
         self.buttons.add(BackButton())
 
         # lines are tuples (text, style)
         self.lines = [
             ("Commands", "header"),
-            ("Left arrow / Right arrow - move paddle", "text"),
+            ("Right/left arrow or click on the screen - move paddle that way", "text"),
             ("Spacebar - pause game", "text"),
             ("Credits", "header"),
             ("Original game and idea by Mark Andrade - AndradeArts", "text"),
@@ -53,7 +56,7 @@ class InfoPage:
     def update(self):
         """Updates according to paddle input."""
         # move paddle in menù
-        action = self.paddle.get_key_input()
+        action = self.paddle.get_key_input(self.commands)
         if (
             action in (Action.LEFT, Action.RIGHT)
             and self.frames_since_last_move >= ACTION_COOLDOWN
@@ -61,7 +64,8 @@ class InfoPage:
             self.paddle.paddle.move(action)
             self.frames_since_last_move = 0
         else:
-            self.paddle.paddle.animate_move()
+            if action != Action.NOOP_DRAG:
+                self.paddle.paddle.animate_move()
         self.frames_since_last_move += 1
 
     def draw(self, screen: pygame.Surface):
