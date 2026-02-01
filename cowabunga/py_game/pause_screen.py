@@ -1,7 +1,8 @@
 import pygame
 from pygame.sprite import Group
-from cowabunga.py_game.sprites.text import PauseText
+
 from cowabunga.py_game.sprites.button import PauseButton
+from cowabunga.py_game.sprites.text import PauseText
 from cowabunga.py_game.states import States
 
 
@@ -17,6 +18,7 @@ class PauseScreen:
 
     def draw(self, screen: pygame.Surface):
         """Draw the pause screen. Must be called after PygameRenderer.draw_screen() to have background.
+
         Args:
             screen: surface to draw on.
         """
@@ -25,6 +27,7 @@ class PauseScreen:
 
     def handle_events(self) -> States:
         """Handles pause events.
+
         Returns:
             render_state: outcome of event handling.
         """

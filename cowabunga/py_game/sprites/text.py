@@ -1,5 +1,8 @@
+from pathlib import Path
+
 import pygame
-import cowabunga.env.settings as settings
+
+from cowabunga.env import settings
 
 
 class TextSprite(pygame.sprite.Sprite):
@@ -33,26 +36,55 @@ class TitleText(TextSprite):
     """Main menu title text sprite."""
 
     def __init__(self):
-        text = "COWABUNGA"
-        font = pygame.font.Font(None, size=settings.HEIGHT // 5)
-        color = "yellow"
-        pos = (settings.WIDTH // 2, settings.HEIGHT * 0.4)
-        super().__init__(text, font, color, pos)
-        # center text
-        self.rect.centerx = settings.WIDTH // 2
+        pygame.sprite.Sprite.__init__(self)
+        self.asset = Path(__file__).parent / ".." / "assets" / "textlogo.png"
+        try:
+            image = pygame.image.load(self.asset).convert_alpha()
+            max_width = settings.WIDTH * 0.6
+            scale = max_width / image.get_width()
+            image = pygame.transform.smoothscale(
+                image,
+                (
+                    int(image.get_width() * scale),
+                    int(image.get_height() * scale),
+                ),
+            )
+            self.image = image
+            self.rect = self.image.get_rect()
+            self.rect.center = (settings.WIDTH // 2, int(settings.HEIGHT * 0.48))
+        except Exception as e:
+            print(f"Unable to load image for TitleText: {e}")
+            text = "COWABUNGA"
+            font = pygame.font.Font(None, size=settings.HEIGHT // 5)
+            color = "yellow"
+            pos = (settings.WIDTH // 2, settings.HEIGHT * 0.4)
+            super().__init__(text, font, color, pos)
+            # center text
+            self.rect.centerx = settings.WIDTH // 2
 
 
 class PressToPlayText(TextSprite):
     """Text that indiucates how to start a game."""
 
     def __init__(self):
-        text = "Press enter to start a game"
+        text = "Click or press enter to start a game"
         font = pygame.font.SysFont(None, settings.HEIGHT // 20, italic=True)
         color = "white"
-        pos = (settings.WIDTH // 2, settings.HEIGHT * 0.55)
+        pos = (settings.WIDTH // 2, settings.HEIGHT * 0.65)
         super().__init__(text, font, color, pos)
         # center text
         self.rect.centerx = settings.WIDTH // 2
+
+    def clicked(self, click_pos: tuple[int, int]) -> bool:
+        """Check that a click occurred on the text.
+
+        Args:
+            click_pos: coords of the click (x, y).
+
+        Returns:
+            (bool): whether the text has been clicked.
+        """
+        return self.rect.collidepoint(click_pos)
 
 
 class LivesSprite(TextSprite):
@@ -85,13 +117,31 @@ class GameOverText(TextSprite):
     """Game over text sprite."""
 
     def __init__(self):
-        text = "GAME OVER"
-        font = pygame.font.Font(None, size=settings.HEIGHT // 6)
-        color = "black"
-        pos = (settings.WIDTH // 2, settings.HEIGHT // 3)
-        super().__init__(text, font, color, pos)
-        # center text
-        self.rect.centerx = settings.WIDTH // 2
+        pygame.sprite.Sprite.__init__(self)
+        self.asset = Path(__file__).parent / ".." / "assets" / "gameover_text.png"
+        try:
+            image = pygame.image.load(self.asset).convert_alpha()
+            max_width = settings.WIDTH * 0.35
+            scale = max_width / image.get_width()
+            image = pygame.transform.smoothscale(
+                image,
+                (
+                    int(image.get_width() * scale),
+                    int(image.get_height() * scale),
+                ),
+            )
+            self.image = image
+            self.rect = self.image.get_rect()
+            self.rect.center = (settings.WIDTH // 2, int(settings.HEIGHT * 0.33))
+        except Exception as e:
+            print(f"Unable to load asset for GameOverText: {e}")
+            text = "GAME OVER"
+            font = pygame.font.Font(None, size=settings.HEIGHT // 6)
+            color = "black"
+            pos = (settings.WIDTH // 2, settings.HEIGHT // 3)
+            super().__init__(text, font, color, pos)
+            # center text
+            self.rect.centerx = settings.WIDTH // 2
 
 
 class FinalScoreSprite(TextSprite):
@@ -100,9 +150,9 @@ class FinalScoreSprite(TextSprite):
     def __init__(self, text: str | int):
         if isinstance(text, int):
             text = str(text)
-        font = pygame.font.Font(None, size=settings.HEIGHT // 7)
+        font = pygame.font.Font(None, size=settings.HEIGHT // 5)
         color = "yellow"
-        pos = (settings.WIDTH // 2, settings.HEIGHT // 2)
+        pos = (settings.WIDTH // 2, settings.HEIGHT * 0.55)
         super().__init__(text, font, color, pos)
         # center text
         self.rect.centerx = settings.WIDTH // 2
@@ -112,13 +162,24 @@ class PressToGoToMenuText(TextSprite):
     """Text that indicates how to go back to main menu."""
 
     def __init__(self):
-        text = "Press enter to retry"
+        text = "Click or press enter to retry"
         font = pygame.font.SysFont(None, settings.HEIGHT // 20, italic=True)
         color = "white"
-        pos = (settings.WIDTH // 2, settings.HEIGHT * 0.65)
+        pos = (settings.WIDTH // 2, settings.HEIGHT * 0.72)
         super().__init__(text, font, color, pos)
         # center text
         self.rect.centerx = settings.WIDTH // 2
+
+    def clicked(self, click_pos: tuple[int, int]) -> bool:
+        """Check that a click occurred on the text.
+
+        Args:
+            click_pos: coords of the click (x, y).
+
+        Returns:
+            (bool): whether the text has been clicked.
+        """
+        return self.rect.collidepoint(click_pos)
 
 
 class PauseText(TextSprite):

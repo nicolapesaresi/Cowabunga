@@ -1,8 +1,10 @@
-import pygame
 import random
-from cowabunga.env.objects.cow import Cow
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
+
+import pygame
+
+from cowabunga.env.objects.cow import Cow
 
 
 @dataclass
@@ -34,11 +36,9 @@ class CowSprite(pygame.sprite.Sprite):
         self.rect.y = self.cow.y
 
         # rotation
-        if self.cow.velocity[1] == 0 or (
-            self.cow.velocity[1] > 0 and self.cow.bounces == 3
-        ):
+        if self.cow.velocity[1] == 0 or (self.cow.velocity[1] > 0 and self.cow.bounces == 3):
             self.angle = 0
-        else:
+        else:  # noqa: PLR5501
             if self.cow.bounces in (0, 2):
                 self.angle -= 0.3
             else:
@@ -55,8 +55,10 @@ class CowSprite(pygame.sprite.Sprite):
 
     def load_asset(self, cow_type: str) -> pygame.Surface:
         """Loads asset depending on cow type, randomly if not specified.
+
         Args:
             cow_type: one of the keys of self.COW_TYPES or None. In this case, chosen randomly accordingly to probs.
+
         Returns:
             original_image: loaded asset, to be reused when calculating rotation.
         """
@@ -67,14 +69,10 @@ class CowSprite(pygame.sprite.Sprite):
         self.asset = Path(__file__).parent / ".." / "assets" / self.cow_type.asset
         try:
             self.original_image = pygame.image.load(self.asset)
-            self.original_image = pygame.transform.scale(
-                self.original_image, (self.cow.width, self.cow.height)
-            )
+            self.original_image = pygame.transform.scale(self.original_image, (self.cow.width, self.cow.height))
         except Exception as e:
             print(f"Unable to load image for CowSprite: {e}")
-            self.original_image = pygame.Surface(
-                (self.cow.width, self.cow.height), pygame.SRCALPHA
-            )
+            self.original_image = pygame.Surface((self.cow.width, self.cow.height), pygame.SRCALPHA)
             self.original_image.fill("white")
         self.angle = 0
         return self.original_image

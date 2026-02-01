@@ -1,17 +1,19 @@
-import asyncio
+import asyncio  # noqa: I001
 import numpy  # needed here, otherwise pygbag breaks  # noqa: F401
+from datetime import datetime
 
 import pygame
-import cowabunga.env.settings as settings
-from datetime import datetime
-from cowabunga.py_game.states import States
+
+from cowabunga.env import settings
 from cowabunga.py_game.game import PygameRenderer
+from cowabunga.py_game.states import States
 
 pygame.init()
 screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
 
 
 async def main():
+    """Async pygbag loop."""
     game = PygameRenderer(screen)
     game.clock = pygame.time.Clock()
     game.load_gamescreen()
@@ -47,8 +49,8 @@ async def main():
                     render_state = States.PAUSE
 
             # player input and env update
-            game.paddle.get_key_input()
-            game.env.step(0)
+            action = game.paddle.get_key_input(game.commands)
+            game.env.step(action)
             game.update_cows()
 
             # draw new screen

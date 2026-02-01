@@ -1,10 +1,13 @@
 import pygame
-import cowabunga.env.settings as settings
-from cowabunga.py_game.sprites.text import TextSprite
-from cowabunga.py_game.sprites.paddle import PaddleSprite
-from cowabunga.py_game.states import States
-from cowabunga.py_game.sprites.button import BackButton
 from pygame.sprite import Group
+
+from cowabunga.env import settings
+from cowabunga.env.actions import Action
+from cowabunga.py_game.commands import CommandModes
+from cowabunga.py_game.sprites.button import BackButton
+from cowabunga.py_game.sprites.paddle import PaddleSprite
+from cowabunga.py_game.sprites.text import TextSprite
+from cowabunga.py_game.states import States
 
 
 class LeaderboardRow(TextSprite):
@@ -12,6 +15,7 @@ class LeaderboardRow(TextSprite):
 
     def __init__(self, rank: int, name: str, score: int, timestamp, y: int):
         """Instantiates leaderboard row.
+
         Args:
             rank: ranking in the leaderboards.
             name: name of the player.
@@ -31,11 +35,15 @@ class LeaderboardRow(TextSprite):
 class LeaderboardScreen:
     """Handles leaderboard screen for Cowabunga."""
 
-    def __init__(self, paddle: PaddleSprite, scores: list[dict]):
+    def __init__(self, commands: CommandModes, paddle: PaddleSprite, scores: list[dict]):
         """Instantiates main menù elements.
+
         Args:
+            commands: command mode for moving paddle
             paddle: paddle sprite from pygame renderer.
+            scores: list of highscores to display.
         """
+        self.commands = commands
         self.paddle = paddle
         self.scores = sorted(
             scores,
@@ -71,9 +79,20 @@ class LeaderboardScreen:
             len(self.rows) * self.row_height - self.visible_rows * self.row_height,
         )
 
+        self.frames_since_last_move = 0  # for paddle movement
+
     def update(self):
         """Updates leaderboard page."""
-        self.paddle.get_key_input()
+        # move paddle in page
+        action = self.paddle.get_key_input(self.commands)
+        if action in (Action.LEFT, Action.RIGHT) and self.frames_since_last_move >= settings.ACTION_COOLDOWN:
+            self.paddle.paddle.move(action)
+            self.frames_since_last_move = 0
+        else:  # noqa: PLR5501
+            if action != Action.NOOP_DRAG:
+                self.paddle.paddle.animate_move()
+        self.frames_since_last_move += 1
+
         # scrolling
         self.scroll_y = max(-self.max_scroll, min(0, self.scroll_y))
         for row in self.rows:
@@ -81,6 +100,7 @@ class LeaderboardScreen:
 
     def draw(self, screen: pygame.Surface):
         """Draw the leaderboard page. Must be called after PygameRenderer.draw_screen() to have background.
+
         Args:
             screen: surface to draw on.
         """
@@ -91,6 +111,7 @@ class LeaderboardScreen:
 
     def handle_events(self) -> States:
         """Handles leaderboard events.
+
         Returns:
             render_state: outcome of event handling.
         """
