@@ -4,6 +4,7 @@
 
 Help the cows cross the river safely!
 The game can be played online in browser or locally with Pygame.
+
 [PLAY IN BROWSER](https://nicolapesaresi.github.io/Cowabunga/)
 
 ![example_screenshot](cowabunga/py_game/assets/_example_screenshot.png)
