@@ -1,9 +1,11 @@
-import pygame
-from cowabunga.env.objects.paddle import Paddle
-from cowabunga.env.actions import Action
-from cowabunga.py_game.commands import CommandModes
-import cowabunga.env.settings as settings
 from pathlib import Path
+
+import pygame
+
+from cowabunga.env import settings
+from cowabunga.env.actions import Action
+from cowabunga.env.objects.paddle import Paddle
+from cowabunga.py_game.commands import CommandModes
 
 
 class PaddleSprite(pygame.sprite.Sprite):
@@ -15,9 +17,7 @@ class PaddleSprite(pygame.sprite.Sprite):
         self.asset = Path(__file__).parent / ".." / "assets" / "paddle.png"
         try:
             self.image = pygame.image.load(self.asset)
-            self.image = pygame.transform.scale(
-                self.image, (self.paddle.width, self.paddle.height)
-            )
+            self.image = pygame.transform.scale(self.image, (self.paddle.width, self.paddle.height))
         except Exception as e:
             print(f"Unable to load image for PaddleSprite: {e}")
             self.image = pygame.Surface((self.paddle.width, self.paddle.height))
@@ -62,9 +62,7 @@ class PaddleSprite(pygame.sprite.Sprite):
                 if event.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEMOTION):
                     pointer_x, _ = event.pos
                     half_width = self.paddle.width / 2
-                    target_x = max(
-                        half_width, min(pointer_x, settings.WIDTH - half_width)
-                    )
+                    target_x = max(half_width, min(pointer_x, settings.WIDTH - half_width))
                     self.paddle.x = target_x - half_width
                     # no return as it already moves the paddle
             return Action.NOOP_DRAG

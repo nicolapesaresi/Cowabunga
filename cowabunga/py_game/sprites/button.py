@@ -1,10 +1,13 @@
-import pygame
 from pathlib import Path
-import cowabunga.env.settings as settings
+
+import pygame
+
+from cowabunga.env import settings
 
 
 class Button(pygame.sprite.Sprite):
     """Generic sprite for button.
+
     Args:
         width: width of the button.
         height: height of the button.
@@ -21,9 +24,11 @@ class Button(pygame.sprite.Sprite):
 
     def clicked(self, click_pos: tuple[int, int]) -> bool:
         """Check that a click occurred inside the button.
+
         Args:
             click_pos: coords of the click (x, y).
-        Returns
+
+        Returns:
             (bool): whether the button has been clicked.
         """
         inside_x = self.x <= click_pos[0] <= self.x + self.width
@@ -33,6 +38,7 @@ class Button(pygame.sprite.Sprite):
 
 class RoundButton(Button):
     """Generic sprite for round button.
+
     Args:
     size: height and width of the button.
     x: x coord of top left corner.
@@ -44,9 +50,11 @@ class RoundButton(Button):
 
     def clicked(self, click_pos: tuple[int, int]) -> bool:
         """Check that a click occurred inside the circle of the button, not just the rect.
+
         Args:
             click_pos: coords of the click (x, y).
-        Returns
+
+        Returns:
             (bool): whether the button has been clicked.
         """
         cx = self.x + self.width / 2

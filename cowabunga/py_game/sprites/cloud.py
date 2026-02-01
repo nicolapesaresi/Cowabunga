@@ -1,8 +1,10 @@
-import pygame
 import random
-import numpy as np
-import cowabunga.env.settings as settings
 from pathlib import Path
+
+import numpy as np
+import pygame
+
+from cowabunga.env import settings
 
 
 class CloudSprite(pygame.sprite.Sprite):
@@ -16,7 +18,9 @@ class CloudSprite(pygame.sprite.Sprite):
         speed: float | None = None,
         alpha: int = 180,
     ):
-        """Instantiates cloud sprite. If parameters are not specified, they are chosen randomly and starting position is just outside of the screen.
+        """Instantiates cloud sprite. If parameters are not specified,
+            they are chosen randomly and starting position is just outside of the screen.
+
         Args:
             height: height of the cloud sprite.
             x: x position of the cloud sprite. By default a random x coord.
@@ -32,9 +36,7 @@ class CloudSprite(pygame.sprite.Sprite):
         if y is None:
             y = random.random() * settings.HEIGHT * 0.40 + settings.HEIGHT * 0.01
         if speed is None:
-            speed = -(
-                random.random() * settings.WIDTH * 0.0005 + settings.WIDTH * 0.0005
-            )
+            speed = -(random.random() * settings.WIDTH * 0.0005 + settings.WIDTH * 0.0005)
         self.height = height
         self.width = self.height / settings.HEIGHT * settings.WIDTH
         self.x = x
@@ -44,20 +46,11 @@ class CloudSprite(pygame.sprite.Sprite):
 
         # check cloud will enter screen if it starts outside
         if self.x < 0:
-            assert (
-                self.speed > 0
-            ), f"Cloud with these x-coord and speed will never enter screen: {self.x, speed}"
+            assert self.speed > 0, f"Cloud with these x-coord and speed will never enter screen: {self.x, speed}"
         elif self.x >= settings.WIDTH:
-            assert (
-                self.speed < 0
-            ), f"Cloud with these x-coord and speed will never enter screen: {self.x, speed}"
+            assert self.speed < 0, f"Cloud with these x-coord and speed will never enter screen: {self.x, speed}"
 
-        self.asset = (
-            Path(__file__).parent
-            / ".."
-            / "assets"
-            / f"cloud_{random.choice((1,2,3))}.png"
-        )
+        self.asset = Path(__file__).parent / ".." / "assets" / f"cloud_{random.choice((1,2,3))}.png"
         try:
             self.image = pygame.image.load(self.asset)
             self.image = pygame.transform.scale(self.image, (self.width, self.height))

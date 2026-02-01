@@ -1,6 +1,8 @@
-import pygame
-import cowabunga.env.settings as settings
 from pathlib import Path
+
+import pygame
+
+from cowabunga.env import settings
 
 
 class SkySprite(pygame.sprite.Sprite):

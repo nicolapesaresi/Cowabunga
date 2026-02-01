@@ -1,6 +1,6 @@
-import cowabunga.env.settings as settings
-from cowabunga.env.objects.rect import Rect
+from cowabunga.env import settings
 from cowabunga.env.actions import Action
+from cowabunga.env.objects.rect import Rect
 
 
 class Paddle(Rect):
@@ -20,9 +20,7 @@ class Paddle(Rect):
             settings.spot_4 - self.width // 2,
         ]
         self.current_spot = len(self.landing_spots) // 2  # middle spot
-        self.step_movement = (
-            self.landing_spots[1] - self.landing_spots[0]
-        ) / settings.ACTION_COOLDOWN
+        self.step_movement = (self.landing_spots[1] - self.landing_spots[0]) / settings.ACTION_COOLDOWN
         # this assumes equidistant landing spots
 
     def move(
@@ -40,10 +38,7 @@ class Paddle(Rect):
         ), f"Invalid movement direction for paddle: {direction}"
         if direction == Action.LEFT and self.current_spot > 0:
             self.current_spot -= 1
-        elif (
-            direction == Action.RIGHT
-            and self.current_spot < len(self.landing_spots) - 1
-        ):
+        elif direction == Action.RIGHT and self.current_spot < len(self.landing_spots) - 1:
             self.current_spot += 1
 
     def animate_move(self):

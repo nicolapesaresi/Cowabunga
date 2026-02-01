@@ -1,6 +1,8 @@
-import pygame
 import time
-import cowabunga.env.settings as settings
+
+import pygame
+
+from cowabunga.env import settings
 
 
 class TextBoxSprite(pygame.sprite.Sprite):
@@ -22,6 +24,7 @@ class TextBoxSprite(pygame.sprite.Sprite):
         border_radius: int = 8,
     ):
         """Instantiates text input box.
+
         Args:
             x: x coord of top left corner.
             y: y coord of top left corner.
@@ -60,6 +63,7 @@ class TextBoxSprite(pygame.sprite.Sprite):
 
     def handle_event(self, event):
         """Handles pygame events for text input.
+
         Args:
             event: pygame event.
         """

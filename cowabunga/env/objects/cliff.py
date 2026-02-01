@@ -1,4 +1,4 @@
-import cowabunga.env.settings as settings
+from cowabunga.env import settings
 from cowabunga.env.objects.rect import Rect
 
 

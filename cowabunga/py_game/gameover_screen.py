@@ -1,8 +1,9 @@
 import pygame
 from pygame.sprite import Group
+
 from cowabunga.py_game.sprites.text import (
-    GameOverText,
     FinalScoreSprite,
+    GameOverText,
     PressToGoToMenuText,
 )
 from cowabunga.py_game.states import States
@@ -13,17 +14,17 @@ class GameOver:
 
     def __init__(self, score: int):
         """Instantiates game over screen elements.
+
         Args:
             score: final score of the game.
         """
         self.score = score
         self.game_over_texts = Group()
-        self.game_over_texts.add(
-            GameOverText(), FinalScoreSprite(self.score), PressToGoToMenuText()
-        )
+        self.game_over_texts.add(GameOverText(), FinalScoreSprite(self.score), PressToGoToMenuText())
 
     def draw(self, screen: pygame.Surface):
         """Draw the game over screen. Must be called after PygameRenderer.draw_screen() to have background.
+
         Args:
             screen: surface to draw on.
         """
@@ -31,6 +32,7 @@ class GameOver:
 
     def handle_events(self) -> States:
         """Handles main menù events.
+
         Returns:
             render_state: outcome of event handling.
         """

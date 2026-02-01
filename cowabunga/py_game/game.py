@@ -1,29 +1,31 @@
-import pygame
+import json
 import random
 import sys
-import json
-from pygame.sprite import Group
-import cowabunga.env.settings as settings
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
+import pygame
+from pygame.sprite import Group
+
+from cowabunga.env import settings
 from cowabunga.env.env import CowabungaEnv
 from cowabunga.env.objects.cow import Cow
-from cowabunga.py_game.sprites.cow import CowSprite
+from cowabunga.py_game.gameover_screen import GameOver
+from cowabunga.py_game.info_page import InfoPage
+from cowabunga.py_game.leaderboard import LeaderboardScreen
+from cowabunga.py_game.main_menu import MainMenu
+from cowabunga.py_game.pause_screen import PauseScreen
 from cowabunga.py_game.sprites.cliff import CliffSprite
-from cowabunga.py_game.sprites.paddle import PaddleSprite
-from cowabunga.py_game.sprites.sea import FrontSeaSprite, BackSeaSprite
-from cowabunga.py_game.sprites.sky import SkySprite
 from cowabunga.py_game.sprites.cloud import CloudSprite
+from cowabunga.py_game.sprites.cow import CowSprite
+from cowabunga.py_game.sprites.paddle import PaddleSprite
+from cowabunga.py_game.sprites.sea import BackSeaSprite, FrontSeaSprite
+from cowabunga.py_game.sprites.sky import SkySprite
 from cowabunga.py_game.sprites.text import (
     LivesSprite,
     ScoreSprite,
 )
 from cowabunga.py_game.states import States
-from cowabunga.py_game.main_menu import MainMenu
-from cowabunga.py_game.gameover_screen import GameOver
-from cowabunga.py_game.pause_screen import PauseScreen
-from cowabunga.py_game.info_page import InfoPage
-from cowabunga.py_game.leaderboard import LeaderboardScreen
 
 # importing js only in browser mode
 try:
@@ -44,10 +46,11 @@ class PygameRenderer:
         start_at_menu: bool = True,
     ):
         """Initializes pygame renderer.
+
         Args:
             screen: None for desktop mode, pygame screen for browser.
             seed: seed to be passed to the env for random cow generation.
-            menu: whether pygame starts form main menu or runs directly.
+            start_at_menu: whether pygame starts form main menu or runs directly.
         """
         if screen is None:
             self.setup_pygame()
@@ -139,10 +142,8 @@ class PygameRenderer:
         self.back_sea = BackSeaSprite()
         self.front_sea = FrontSeaSprite()
         self.clouds = Group()
-        for i in range(2):
-            self.clouds.add(
-                CloudSprite(x=random.random() * settings.WIDTH / 2 + settings.WIDTH / 2)
-            )
+        for _i in range(2):
+            self.clouds.add(CloudSprite(x=random.random() * settings.WIDTH / 2 + settings.WIDTH / 2))
         # score and lives
         self.lives = LivesSprite(self.env.lives)
         self.score = ScoreSprite(self.env.score)
@@ -186,9 +187,7 @@ class PygameRenderer:
 
                 # player input and env update
                 action = self.paddle.get_key_input(self.commands)
-                self.env.step(
-                    action
-                )  # TODO: this only supports human player actions, change to support Agent
+                self.env.step(action)  # TODO: this only supports human player actions, change to support Agent
                 self.update_cows()
 
                 # draw new screen
@@ -236,14 +235,12 @@ class PygameRenderer:
         for cloud in to_remove:
             cloud.kill()
         # spaw new clouds
-        if (
-            random.random() <= settings.NEW_CLOUD_PROB
-            and len(self.clouds) < settings.MAX_CLOUDS_ON_SCREEN
-        ):
+        if random.random() <= settings.NEW_CLOUD_PROB and len(self.clouds) < settings.MAX_CLOUDS_ON_SCREEN:
             self.clouds.add(CloudSprite(x=settings.WIDTH))
 
     def draw_screen(self, move_background: bool = True):
         """Draws the updated screen.
+
         Args:
             move_background: if False, backgorund (sea and clouds) doesn't update.
         """
@@ -309,7 +306,7 @@ class PygameRenderer:
             data = window.localStorage.getItem("highscores")
             if data:
                 return json.loads(data)
-        with open(self.highscores_json, "r") as f:
+        with open(self.highscores_json) as f:
             return json.load(f)
 
     def save_highscores(self, scores: dict):
@@ -321,6 +318,7 @@ class PygameRenderer:
                 json.dump(scores, f, indent=2)
 
     def update_highscores(self, name: str, points: int, timestamp: datetime):
+        """Updates highscores with new score."""
         highscores = self.load_highscores()
         highscores.append(
             {

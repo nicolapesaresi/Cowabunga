@@ -1,9 +1,10 @@
 import numpy as np
-import cowabunga.env.settings as settings
+
+from cowabunga.env import settings
 from cowabunga.env.actions import Action
+from cowabunga.env.objects.cliff import Cliff, LeftCliff, RightCliff
 from cowabunga.env.objects.cow import Cow
 from cowabunga.env.objects.paddle import Paddle
-from cowabunga.env.objects.cliff import Cliff, RightCliff, LeftCliff
 
 
 class CowabungaEnv:
@@ -11,6 +12,7 @@ class CowabungaEnv:
 
     def __init__(self, seed: int | None = None):
         """Instantiates the class.
+
         Args:
             seed: seed for random cow generation.
         """
@@ -30,27 +32,24 @@ class CowabungaEnv:
         self.done = False
 
         self.cows: list[Cow] = []
-        self.cow_id = (
-            0  # needed in pygame to update cow sprites. gets updated at every new cow
-        )
+        self.cow_id = 0  # needed in pygame to update cow sprites. gets updated at every new cow
         self.cliffs: list[Cliff] = [LeftCliff(), RightCliff()]
         self.paddle = Paddle()
         self.frames_since_last_move = self.cooldown + 1  # allows moving
 
     def step(self, action: Action):
         """Updates the environment after one instant of time.
+
         Args:
             action: action taken by the player. Can be NOOP (no action).
+
         Returns:
             obs: observation of the game by the player, corresponding to state.
             done: whether episode is finished.
             info: additional info.
         """
         # handle action
-        if (
-            action in (Action.LEFT, Action.RIGHT)
-            and self.frames_since_last_move >= self.cooldown
-        ):
+        if action in (Action.LEFT, Action.RIGHT) and self.frames_since_last_move >= self.cooldown:
             self.paddle.move(action)
             self.frames_since_last_move = 0
         else:
@@ -107,14 +106,12 @@ class CowabungaEnv:
                 self.score += 1
 
         # remove safe and dead cows from env
-        self.cows = [
-            cow for cow in self.cows if not cow.is_dead() and not cow.is_safe()
-        ]
+        self.cows = [cow for cow in self.cows if not cow.is_dead() and not cow.is_safe()]
 
     def generate_new_cows(self):
         """Evaluates cows on the screen and decides wether to generate a new one."""
         n_cows = len(self.cows)
-        if n_cows < self.max_cows_on_screen:
+        if n_cows < self.max_cows_on_screen:  # noqa: SIM102
             if n_cows == 0 or np.random.random() < self.new_cow_prob:
                 new_cow = Cow()
                 new_cow.id = self.cow_id

@@ -1,6 +1,8 @@
-import pygame
-import cowabunga.env.settings as settings
 from pathlib import Path
+
+import pygame
+
+from cowabunga.env import settings
 
 
 class TextSprite(pygame.sprite.Sprite):
@@ -75,9 +77,11 @@ class PressToPlayText(TextSprite):
 
     def clicked(self, click_pos: tuple[int, int]) -> bool:
         """Check that a click occurred on the text.
+
         Args:
             click_pos: coords of the click (x, y).
-        Returns
+
+        Returns:
             (bool): whether the text has been clicked.
         """
         return self.rect.collidepoint(click_pos)
@@ -168,9 +172,11 @@ class PressToGoToMenuText(TextSprite):
 
     def clicked(self, click_pos: tuple[int, int]) -> bool:
         """Check that a click occurred on the text.
+
         Args:
             click_pos: coords of the click (x, y).
-        Returns
+
+        Returns:
             (bool): whether the text has been clicked.
         """
         return self.rect.collidepoint(click_pos)

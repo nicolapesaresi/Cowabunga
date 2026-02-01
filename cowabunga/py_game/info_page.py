@@ -1,13 +1,14 @@
 import pygame
 from pygame.sprite import Group
-import cowabunga.env.settings as settings
-from cowabunga.py_game.states import States
-from cowabunga.py_game.sprites.text import TextSprite
-from cowabunga.py_game.sprites.paddle import PaddleSprite
-from cowabunga.py_game.sprites.button import BackButton, CogsButton
+
+from cowabunga.env import settings
 from cowabunga.env.actions import Action
 from cowabunga.env.settings import ACTION_COOLDOWN
 from cowabunga.py_game.commands import CommandModes
+from cowabunga.py_game.sprites.button import BackButton, CogsButton
+from cowabunga.py_game.sprites.paddle import PaddleSprite
+from cowabunga.py_game.sprites.text import TextSprite
+from cowabunga.py_game.states import States
 
 
 class InfoPage:
@@ -15,6 +16,7 @@ class InfoPage:
 
     def __init__(self, commands: CommandModes, paddle: PaddleSprite):
         """Instantiates InfoPage class.
+
         Args:
             commands: command mode for the paddle.
             paddle: paddle sprite to be rendered on info page.
@@ -65,19 +67,17 @@ class InfoPage:
         self.update_lines()
         # move paddle in menù
         action = self.paddle.get_key_input(self.commands)
-        if (
-            action in (Action.LEFT, Action.RIGHT)
-            and self.frames_since_last_move >= ACTION_COOLDOWN
-        ):
+        if action in (Action.LEFT, Action.RIGHT) and self.frames_since_last_move >= ACTION_COOLDOWN:
             self.paddle.paddle.move(action)
             self.frames_since_last_move = 0
-        else:
+        else:  # noqa: PLR5501
             if action != Action.NOOP_DRAG:
                 self.paddle.paddle.animate_move()
         self.frames_since_last_move += 1
 
     def draw(self, screen: pygame.Surface):
         """Draw all lines centered and buttons.
+
         Args:
             screen: pygame surface to draw on.
         """
@@ -86,6 +86,7 @@ class InfoPage:
 
     def handle_events(self) -> States:
         """Handles info page events.
+
         Returns:
             render_state: outcome of event handling.
         """

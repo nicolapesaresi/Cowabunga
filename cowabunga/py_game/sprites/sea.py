@@ -1,6 +1,8 @@
-import pygame
 from pathlib import Path
-import cowabunga.env.settings as settings
+
+import pygame
+
+from cowabunga.env import settings
 
 
 class SeaSprite(pygame.sprite.Sprite):
@@ -19,6 +21,7 @@ class SeaSprite(pygame.sprite.Sprite):
         extra_height: int = 0,
     ):
         """Instantiates SeaSprite object.
+
         Args:
             x: initial x coord.
             y: initial y coord.
@@ -54,9 +57,11 @@ class SeaSprite(pygame.sprite.Sprite):
             return surface
 
     def update(self):
+        """Updates sprite."""
         self.offset_x = (self.offset_x + self.speed) % self.tile_width
 
     def draw(self, screen: pygame.Surface):
+        """Draws sprite."""
         for i in range(self.num_tiles):
             x = (i - 1) * self.tile_width + self.offset_x
             screen.blit(self.image, (x, self.rect.y))

@@ -1,4 +1,4 @@
-import cowabunga.env.settings as settings
+from cowabunga.env import settings
 from cowabunga.env.objects.rect import Rect
 
 
@@ -27,6 +27,7 @@ class Cow(Rect):
 
     def land(self, landing_y: int):
         """Makes cow stop falling.
+
         Args:
             landing_y: y coord of landing, to avoid rounding errors.
         """
@@ -35,6 +36,7 @@ class Cow(Rect):
 
     def bounce(self, bounce_y: int):
         """Bounces cow off the paddle.
+
         Args:
             bounce_y: y coord of landing spot, to start the bounce from. Avoids rounding errors.
         """
@@ -44,20 +46,16 @@ class Cow(Rect):
 
     def is_dead(self, fall_y: int = settings.HEIGHT):
         """Checks if cow has fallen off the screen.
+
         Args:
             fall_y: y coord value that defines when a cow has fallen off.
         """
-        if self.y > fall_y:
-            return True
-        else:
-            return False
+        return self.y > fall_y
 
     def is_safe(self, safe_x: int = settings.WIDTH):
         """Checks if cow has safely crossed.
+
         Args:
             safe_x: x coord value that defines when a cow has safely crossed.
         """
-        if self.x > safe_x:
-            return True
-        else:
-            return False
+        return self.x > safe_x
