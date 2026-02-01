@@ -16,6 +16,8 @@ Cowabunga is an amazing iOS game created by Mark Andrade. This repository is jus
 ## Game
 Cows are coming from the left side of the screen and have to cross a river. You can help by bouncing them on your lifeboat to the other side. Each cow needs three bounces to cross the river. You have 3 lives to try and save as many as you can.
 
+You control the paddle with your mouse or arrow keys. In browser mode, dragging the paddle on a touch screen should work, but the game is not optimized for mobile and might fail on some devices. If on mobile you get stuck on the pygbag "Ready to start!" loading screen, double tapping under the window usually loads the game. This seems to be an issue with pygbag.
+
 ## Structure
 The repository is structured as follows:
 - In the `cowabunga/env` folder you can find the game environment. This defines the game rules and logic. This is separate from the pygame interface as I intend to train a Reinforcement Learning agent on the game in the future.

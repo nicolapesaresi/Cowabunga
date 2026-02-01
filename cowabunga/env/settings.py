@@ -30,6 +30,6 @@ ACTION_COOLDOWN = 10  # number of frames you can't move after having moved
 MAX_CLOUDS_ON_SCREEN = 7
 NEW_CLOUD_PROB = 0.005
 
-DEFAULT_USERNAME = "Cowboy1"
+DEFAULT_USERNAME = "Cowboy"
 
 DEFAULT_COMMANDS = CommandModes.DRAG
