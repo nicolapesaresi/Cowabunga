@@ -4,7 +4,7 @@ import cowabunga.env.settings as settings
 from cowabunga.py_game.states import States
 from cowabunga.py_game.sprites.text import TextSprite
 from cowabunga.py_game.sprites.paddle import PaddleSprite
-from cowabunga.py_game.sprites.button import BackButton
+from cowabunga.py_game.sprites.button import BackButton, CogsButton
 from cowabunga.env.actions import Action
 from cowabunga.env.settings import ACTION_COOLDOWN
 from cowabunga.py_game.commands import CommandModes
@@ -22,23 +22,32 @@ class InfoPage:
         self.paddle = paddle
         self.commands = commands
         self.buttons = Group()
-        self.buttons.add(BackButton())
+        self.buttons.add(BackButton(), CogsButton())
 
-        # lines are tuples (text, style)
-        self.lines = [
-            ("Commands", "header"),
-            ("Right/left arrow or click on the screen - move paddle that way", "text"),
-            ("Spacebar - pause game", "text"),
-            ("Credits", "header"),
-            ("Original game and idea by Mark Andrade - AndradeArts", "text"),
-            ("Pygame version created by Nicola Pesaresi", "text"),
-        ]
+        self.command_lines = {
+            CommandModes.CLICK: "Right/left arrow or click on the screen - move paddle",
+            CommandModes.DRAG: "Move mouse or drag - move paddle",
+        }
 
+        self.frames_since_last_move = 0  # for paddle movement in page
+
+    def update_lines(self):
+        """Updates info page texts based on commands."""
         self.sprites = pygame.sprite.Group()
         color = {"header": "yellow", "text": "white"}
         font_size = {"header": settings.HEIGHT // 15, "text": settings.HEIGHT // 25}
         start_y = int(settings.HEIGHT * 0.3)
         spacing = font_size["text"] * 1.75
+
+        # update lines based on commands - tuples (text, style)
+        self.lines = [
+            ("Commands", "header"),
+            (self.command_lines[self.commands], "text"),
+            ("Spacebar - pause game", "text"),
+            ("Credits", "header"),
+            ("Original game and idea by Mark Andrade - AndradeArts", "text"),
+            ("Pygame version created by Nicola Pesaresi", "text"),
+        ]
 
         for i, (text, style) in enumerate(self.lines):
             y = start_y + i * spacing
@@ -51,10 +60,9 @@ class InfoPage:
             sprite.rect.centerx = settings.WIDTH // 2
             self.sprites.add(sprite)
 
-        self.frames_since_last_move = 0  # for paddle movement in page
-
     def update(self):
         """Updates according to paddle input."""
+        self.update_lines()
         # move paddle in menù
         action = self.paddle.get_key_input(self.commands)
         if (
@@ -83,9 +91,14 @@ class InfoPage:
         """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return States.CLOSE
+                return States.CLOSE, self.commands
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 for button in self.buttons.sprites():
                     if isinstance(button, BackButton) and button.clicked(event.pos):
-                        return States.MENU
-        return States.INFO
+                        return States.MENU, self.commands
+                    elif isinstance(button, CogsButton) and button.clicked(event.pos):
+                        if self.commands == CommandModes.CLICK:
+                            self.commands = CommandModes.DRAG
+                        elif self.commands == CommandModes.DRAG:
+                            self.commands = CommandModes.CLICK
+        return States.INFO, self.commands

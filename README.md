@@ -8,9 +8,9 @@ The game can be played online in browser or locally with Pygame.
 
 ![example_screenshot](cowabunga/py_game/assets/_example_screenshot.png)
 
-Cowabunga is an amazing iOS game created by Mark Andrade. This repository is just the Pygame recreation of the game made by a fan. All credits for the original idea and game go to Mark Andrade and AndradeArts.
+Cowabunga is an amazing iOS game created by Mark Andrade. This repository is just the Pygame recreation of the game made by a fan. All credits for the original idea and game go to Mark Andrade and AndradeArts.  
 
-🌐 [Mark Andrade website](https://markandrade.com)
+🌐 [Mark Andrade website](https://markandrade.com)  
 👔 [Mark Andrade LinkedIn](https://www.linkedin.com/in/markandrade/)
 
 ## Game

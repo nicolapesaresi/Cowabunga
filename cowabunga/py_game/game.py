@@ -116,7 +116,7 @@ class PygameRenderer:
         self.info.update()
         self.draw_screen()
         self.info.draw(self.screen)
-        render_state = self.info.handle_events()
+        render_state, self.commands = self.info.handle_events()
 
         # if leaving info page, destroy it to recreate next time
         if render_state != States.INFO:

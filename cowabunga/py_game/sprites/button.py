@@ -118,6 +118,26 @@ class BackButton(RoundButton):
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
 
+class CogsButton(RoundButton):
+    """Cogs button to change commands."""
+
+    def __init__(self):
+        size = settings.WIDTH * 0.04
+        x = settings.WIDTH * 0.74 - size // 2
+        y = settings.HEIGHT * 0.35
+        super().__init__(size, x, y)
+
+        self.asset = Path(__file__).parent / ".." / "assets" / "cogs_button.png"
+        try:
+            self.image = pygame.image.load(self.asset)
+            self.image = pygame.transform.scale(self.image, (self.width, self.height))
+        except Exception as e:
+            print(f"Unable to load image for CogsButton: {e}")
+            self.image = pygame.Surface((self.width, self.height))
+            self.image.fill("red")
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
+
 class PauseButton(RoundButton):
     """Pause button class."""
 
