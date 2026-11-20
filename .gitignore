@@ -212,3 +212,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Cowabunga: player's local volume settings
+cowabunga/user_settings.json

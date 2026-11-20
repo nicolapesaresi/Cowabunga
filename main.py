@@ -1,6 +1,5 @@
 import asyncio  # noqa: I001
 import numpy  # needed here, otherwise pygbag breaks  # noqa: F401
-from datetime import datetime
 
 import pygame
 
@@ -8,67 +7,23 @@ from cowabunga.env import settings
 from cowabunga.py_game.game import PygameRenderer
 from cowabunga.py_game.states import States
 
+pygame.mixer.pre_init(44100, -16, 2, 512)  # small buffer: low latency for bounce notes
 pygame.init()
 screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
 
 
 async def main():
-    """Async pygbag loop."""
+    """Async pygbag loop. Game logic lives in PygameRenderer.update_state, shared with desktop."""
     game = PygameRenderer(screen)
     game.clock = pygame.time.Clock()
     game.load_gamescreen()
     game.draw_screen()
     render_state = game.initial_state
 
-    while True:
-        if render_state == States.CLOSE:
-            return
-
-        elif render_state == States.MENU:
-            render_state = game.main_menu()
-
-        elif render_state == States.INFO:
-            render_state = game.info_page()
-
-        elif render_state == States.LEADERBOARD:
-            render_state = game.leadernoard_page()
-
-        elif render_state == States.GAMEOVER:
-            render_state = game.gameover_screen()
-
-        elif render_state == States.PAUSE:
-            render_state = game.pause_game()
-
-        elif render_state == States.GAME:
-            # main game logic
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    render_state = States.CLOSE
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                    render_state = States.PAUSE
-
-            # player input and env update
-            action = game.paddle.get_key_input(game.commands)
-            game.env.step(action)
-            game.update_cows()
-
-            # draw new screen
-            game.draw_screen()
-            game.draw_text()
-
-            # check game finished
-            if game.env.done:
-                game.update_highscores(
-                    name=game.username,
-                    points=game.env.score,
-                    timestamp=datetime.now(),
-                )
-                render_state = States.GAMEOVER
+    while render_state != States.CLOSE:
+        render_state = game.update_state(render_state)
         pygame.display.flip()
         game.clock.tick(settings.FPS)
-        if game.env.done:
-            render_state = States.GAMEOVER
         await asyncio.sleep(0)
 
 

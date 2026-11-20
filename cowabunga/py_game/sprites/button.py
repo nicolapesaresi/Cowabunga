@@ -147,12 +147,12 @@ class CogsButton(RoundButton):
 
 
 class PauseButton(RoundButton):
-    """Pause button class."""
+    """Pause button class. By default big and centered; size and position can be given."""
 
-    def __init__(self):
-        size = settings.WIDTH * 0.1
-        x = settings.WIDTH // 2 - size // 2
-        y = settings.HEIGHT // 2 - size
+    def __init__(self, size: float | None = None, x: float | None = None, y: float | None = None):
+        size = size or settings.WIDTH * 0.1
+        x = settings.WIDTH // 2 - size // 2 if x is None else x
+        y = settings.HEIGHT // 2 - size if y is None else y
         super().__init__(size, x, y)
 
         self.asset = Path(__file__).parent / ".." / "assets" / "pause_icon.png"
@@ -163,4 +163,56 @@ class PauseButton(RoundButton):
             print(f"Unable to load image for PauseButton: {e}")
             self.image = pygame.Surface((self.width, self.height))
             self.image.fill("red")
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
+
+class SoundButton(RoundButton):
+    """Speaker button that opens the sound settings. Drawn in code (no image asset)."""
+
+    def __init__(self):
+        size = settings.WIDTH * 0.05
+        x = settings.WIDTH - size * 1.5
+        y = size * 0.5
+        super().__init__(size, x, y)
+
+        s = int(size)
+        self.image = pygame.Surface((s, s), pygame.SRCALPHA)
+        # same look as the other round buttons: light blue with a dark outline
+        pygame.draw.circle(self.image, (178, 222, 236), (s // 2, s // 2), s // 2)
+        pygame.draw.circle(self.image, (70, 70, 75), (s // 2, s // 2), s // 2, width=max(2, s // 25))
+        dark = (30, 30, 30)
+        # speaker body and cone
+        body = pygame.Rect(int(s * 0.22), int(s * 0.4), int(s * 0.14), int(s * 0.2))
+        pygame.draw.rect(self.image, dark, body)
+        cone = [(s * 0.36, s * 0.4), (s * 0.52, s * 0.26), (s * 0.52, s * 0.74), (s * 0.36, s * 0.6)]
+        pygame.draw.polygon(self.image, dark, cone)
+        # sound waves
+        for i, radius in enumerate((0.14, 0.24)):
+            r = int(s * radius)
+            arc = pygame.Rect(int(s * 0.5) - r, s // 2 - r, 2 * r, 2 * r)
+            pygame.draw.arc(self.image, dark, arc, -0.8, 0.8, width=max(2, s // (18 + 4 * i)))
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
+
+class TextButton(Button):
+    """Rounded button with a text label."""
+
+    def __init__(self, text: str, center: tuple[float, float]):
+        """Instantiates the button.
+
+        Args:
+            text: button label.
+            center: (x, y) of the button center.
+        """
+        font = pygame.font.Font(None, settings.HEIGHT // 18)
+        label = font.render(text, True, "white")
+        width = label.get_width() + settings.WIDTH * 0.04
+        height = label.get_height() + settings.HEIGHT * 0.03
+        super().__init__(width, height, center[0] - width / 2, center[1] - height / 2)
+
+        self.image = pygame.Surface((int(width), int(height)), pygame.SRCALPHA)
+        shape = self.image.get_rect()
+        pygame.draw.rect(self.image, (40, 25, 10, 200), shape, border_radius=shape.height // 2)
+        pygame.draw.rect(self.image, (255, 215, 0), shape, width=3, border_radius=shape.height // 2)
+        self.image.blit(label, label.get_rect(center=shape.center))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))

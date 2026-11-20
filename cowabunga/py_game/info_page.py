@@ -45,7 +45,7 @@ class InfoPage:
         self.lines = [
             ("Commands", "header"),
             (self.command_lines[self.commands], "text"),
-            ("Spacebar - pause game", "text"),
+            ("Spacebar, Esc or pause button - pause game", "text"),
             ("Credits", "header"),
             ("Original game and idea by Mark Andrade - AndradeArts", "text"),
             ("Pygame version created by Nicola Pesaresi", "text"),

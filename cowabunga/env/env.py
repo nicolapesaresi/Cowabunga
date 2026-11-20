@@ -2,6 +2,7 @@ import numpy as np
 
 from cowabunga.env import settings
 from cowabunga.env.actions import Action
+from cowabunga.env.events import Event
 from cowabunga.env.objects.cliff import Cliff, LeftCliff, RightCliff
 from cowabunga.env.objects.cow import Cow
 from cowabunga.env.objects.paddle import Paddle
@@ -36,6 +37,7 @@ class CowabungaEnv:
         self.cliffs: list[Cliff] = [LeftCliff(), RightCliff()]
         self.paddle = Paddle()
         self.frames_since_last_move = self.cooldown + 1  # allows moving
+        self.events: list[Event] = []  # events that happened during the last step
 
     def step(self, action: Action):
         """Updates the environment after one instant of time.
@@ -46,8 +48,9 @@ class CowabungaEnv:
         Returns:
             obs: observation of the game by the player, corresponding to state.
             done: whether episode is finished.
-            info: additional info.
+            info: additional info. info["events"] lists the Event values of this step.
         """
+        self.events = []
         # handle action
         if action in (Action.LEFT, Action.RIGHT) and self.frames_since_last_move >= self.cooldown:
             self.paddle.move(action)
@@ -66,11 +69,12 @@ class CowabungaEnv:
         self.generate_new_cows()
         # update state
         obs = []  # TODO: implement
-        info = {}
 
         # check if game is finished
-        if self.lives < 1:
+        if self.lives < 1 and not self.done:
             self.done = True
+            self.events.append(Event.GAME_OVER)
+        info = {"events": self.events}
 
         return obs, self.done, info
 
@@ -83,6 +87,7 @@ class CowabungaEnv:
             # paddle collision (bounce)
             if cow.check_landing_collision(paddle_hitbox):
                 cow.bounce(paddle_hitbox[1])
+                self.events.append(Event.BOUNCE)
                 collided = True
             # cliff collision (land)
             if not collided:
@@ -100,10 +105,13 @@ class CowabungaEnv:
         """Moves all cows according to their current velocity, and update score and lives."""
         for cow in self.cows:
             cow.move()
-            if cow.is_dead() and self.lives > 0:
-                self.lives -= 1
+            if cow.is_dead():
+                self.events.append(Event.COW_LOST)
+                if self.lives > 0:
+                    self.lives -= 1
             if cow.is_safe():
                 self.score += 1
+                self.events.append(Event.COW_SAVED)
 
         # remove safe and dead cows from env
         self.cows = [cow for cow in self.cows if not cow.is_dead() and not cow.is_safe()]
