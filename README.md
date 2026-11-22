@@ -29,33 +29,22 @@ The repository is structured as follows:
 Development of the game is ongoing. Sounds and cow sequences will be added soon. 
 
 ## Installation
-The repository is setup us as a poetry project and by default requires Python 3.10 or later.
+The repository is set up as a [uv](https://docs.astral.sh/uv/) project and by default requires Python 3.10 or later.
 To install the repository you can follow these steps:
 
-First, install `poetry` if you haven't already, as indicated by the instructions on the [Poetry installation page](https://python-poetry.org/docs/).
+First, install `uv` if you haven't already, as indicated by the instructions on the [uv installation page](https://docs.astral.sh/uv/getting-started/installation/).
 Then, clone the repository to your local machine using the following command:
 ```
 git clone https://github.com/nicolapesaresi/Cowabunga
 cd Cowabunga
 ```
-Create and activate a virtual environment:
+Use uv to create a virtual environment (`.venv`) and install the project dependencies:
 ```
-# replace `myenv` with the name of your virtual environment
-python3 -m venv myenv
-source myenv/bin/activate
-```
-Or, if using `Conda`:
-```
-conda create -n myenv python=3.10
-conda activate myenv
-```
-Use Poetry to install the project dependencies:
-```
-poetry install
+uv sync --no-dev
 ```
 Now you can run the game on desktop, from the repository root, with:
 ```
-python -m cowabunga.scripts.run_pygame
+uv run python -m cowabunga.scripts.run_pygame
 ```
 
 ## Development
@@ -63,11 +52,11 @@ The game is created with Pygame, and is playable in browser using Pygbag and Git
 The game loop logic lives in `PygameRenderer.update_state()`, which is used both by the desktop loop (`PygameRenderer.run()`) and by the browser loop (`main.py`).
 Adding modifications to the game requires to install dev dependencies with 
 ```
-poetry install --with dev
+uv sync
 ```
 To test browser functionalities, the game can be run on localhost with the command 
 ```
-pygbag .
+uv run pygbag .
 ```
 After testing the changes, they can be deployed in github pages with
 ```

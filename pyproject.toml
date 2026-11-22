@@ -1,24 +1,22 @@
-[tool.poetry]
+[project]
 name = "cowabunga"
 version = "0.3.0"
 description = ""
-authors = ["Nicola Pesaresi", "Lorenzo Previati"]
+authors = [{ name = "Nicola Pesaresi" }, { name = "Lorenzo Previati" }]
 readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=2.2.4,<3",
+    "pygame>=2.6.1,<3",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-numpy = "^2.2.4"
-pygame = "^2.6.1"
-
-[tool.poetry.group.dev.dependencies]
-pygbag = "^0.9.2"
-pre-commit = "^4.5.0"
-asyncio = "^4.0.0"
-ghp-import = "^2.1.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "pygbag>=0.9.2,<0.10",
+    "pre-commit>=4.5.0,<5",
+    "asyncio>=4.0.0,<5",
+    "ghp-import>=2.1.0,<3",
+]
 
 [tool.ruff]
 # ruff already excludes many settings by default
