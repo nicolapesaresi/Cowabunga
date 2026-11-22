@@ -39,7 +39,7 @@ class TitleText(TextSprite):
         pygame.sprite.Sprite.__init__(self)
         self.asset = Path(__file__).parent / ".." / "assets" / "textlogo.png"
         try:
-            image = pygame.image.load(self.asset).convert_alpha()
+            image = pygame.image.load(self.asset)
             max_width = settings.WIDTH * 0.6
             scale = max_width / image.get_width()
             image = pygame.transform.smoothscale(
@@ -120,7 +120,7 @@ class GameOverText(TextSprite):
         pygame.sprite.Sprite.__init__(self)
         self.asset = Path(__file__).parent / ".." / "assets" / "gameover_text.png"
         try:
-            image = pygame.image.load(self.asset).convert_alpha()
+            image = pygame.image.load(self.asset)
             max_width = settings.WIDTH * 0.35
             scale = max_width / image.get_width()
             image = pygame.transform.smoothscale(

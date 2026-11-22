@@ -1,4 +1,5 @@
 import json
+import os
 import random
 import sys
 import time
@@ -30,6 +31,7 @@ from cowabunga.py_game.sprites.text import (
     ScoreSprite,
 )
 from cowabunga.py_game.states import States
+from cowabunga.py_game.window import GameWindow
 
 # importing js only in browser mode
 try:
@@ -56,6 +58,7 @@ class PygameRenderer:
             seed: seed to be passed to the env for random cow generation.
             start_at_menu: whether pygame starts form main menu or runs directly.
         """
+        self.window: GameWindow | None = None  # desktop only
         if screen is None:
             self.setup_pygame()
         else:
@@ -92,8 +95,9 @@ class PygameRenderer:
         """Sets up pygame and screen for desktop mode."""
         pygame.mixer.pre_init(44100, -16, 2, 512)  # small buffer: low latency for bounce notes
         pygame.init()
-        self.screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
-        pygame.display.set_caption("Cowabunga - Pygame Edition")
+        os.environ.setdefault("SDL_RENDER_SCALE_QUALITY", "1")  # linear filtering: smoother scaled text
+        self.window = GameWindow("Cowabunga - Pygame Edition")
+        self.screen = self.window.canvas
 
     def main_menu(self):
         """Renders main menu of the game."""
@@ -179,7 +183,7 @@ class PygameRenderer:
 
         while render_state != States.CLOSE:
             render_state = self.update_state(render_state)
-            pygame.display.flip()
+            self.window.present()
             self.clock.tick(self.fps)
         self.close()
 

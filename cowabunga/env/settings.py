@@ -1,8 +1,11 @@
 from cowabunga.py_game.commands import CommandModes
 
 # env settings
-WIDTH = 1600
+WIDTH = 1600  # logical resolution: all game coordinates use this
 HEIGHT = 900
+# desktop window: initial size, resizable; the logical resolution is scaled to fit
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 720
 # game settings
 LIVES = 3
 NEW_COW_PROB = 0.003

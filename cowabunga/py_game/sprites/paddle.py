@@ -6,6 +6,7 @@ from cowabunga.env import settings
 from cowabunga.env.actions import Action
 from cowabunga.env.objects.paddle import Paddle
 from cowabunga.py_game.commands import CommandModes
+from cowabunga.py_game.window import mouse_pos
 
 
 class PaddleSprite(pygame.sprite.Sprite):
@@ -43,7 +44,7 @@ class PaddleSprite(pygame.sprite.Sprite):
             # mouse input
             mouse_buttons = pygame.mouse.get_pressed()
             if mouse_buttons[0]:  # left mouse button
-                mouse_x, _ = pygame.mouse.get_pos()
+                mouse_x, _ = mouse_pos()
                 if mouse_x < self.paddle.x + (self.paddle.width // 2):
                     return Action.LEFT
                 else:
@@ -51,7 +52,7 @@ class PaddleSprite(pygame.sprite.Sprite):
         # drag mode
         elif commands == CommandModes.DRAG:
             # desktop mouse
-            mouse_x, _ = pygame.mouse.get_pos()
+            mouse_x, _ = mouse_pos()
             if mouse_x != 0:  # means there's a mouse
                 half_width = self.paddle.width / 2
                 target_x = max(half_width, min(mouse_x, settings.WIDTH - half_width))
