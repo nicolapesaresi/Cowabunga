@@ -243,15 +243,18 @@ class AudioManager:
             channel.stop()
             if self.music[name] is not None:
                 # both layers start together so they stay in sync
-                channel.play(self.music[name], loops=-1, fade_ms=self.MUSIC_FADE_IN_MS)
+                # set the volume first: a fade-in ramps to the volume set before play()
                 channel.set_volume(self.volumes[name])
+                channel.play(self.music[name], loops=-1, fade_ms=self.MUSIC_FADE_IN_MS)
         self.music_start_ms = pygame.time.get_ticks()
         self.sequencer.reset()
         self.music_on = True
 
     def set_paused(self, paused: bool):
-        """Lowers the music while the game is paused."""
+        """Lowers the music while the game is paused and drops queued bounce notes."""
         self.paused = paused
+        if paused:
+            self.sequencer.pending = 0
 
     def set_menu(self, in_menu: bool):
         """Brings the whistled theme to the front in the menu and back during the game."""
