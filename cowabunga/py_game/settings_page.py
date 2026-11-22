@@ -4,7 +4,7 @@ from pygame.sprite import Group
 from cowabunga.env import settings
 from cowabunga.py_game.audio import AudioManager
 from cowabunga.py_game.sprites.button import BackButton
-from cowabunga.py_game.sprites.text import TextSprite
+from cowabunga.py_game.sprites.text import PageTitle
 from cowabunga.py_game.states import States
 from cowabunga.py_game.volume_controls import VolumeControls, draw_panel
 
@@ -19,14 +19,7 @@ class SettingsPage:
             audio: the game's audio manager.
         """
         self.buttons = Group(BackButton())
-        title = TextSprite(
-            text="Sound",
-            font=pygame.font.Font(None, settings.HEIGHT // 12),
-            color="yellow",
-            pos=(settings.WIDTH // 2, settings.HEIGHT * 0.3),
-        )
-        title.rect.centerx = settings.WIDTH // 2
-        self.texts = Group(title)
+        self.texts = Group(PageTitle("Sound"))
         self.controls = VolumeControls(audio, settings.HEIGHT * 0.46)
 
     def draw(self, screen: pygame.Surface):

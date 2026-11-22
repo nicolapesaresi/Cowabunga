@@ -129,11 +129,14 @@ class BackButton(RoundButton):
 class CogsButton(RoundButton):
     """Cogs button to change commands."""
 
-    def __init__(self):
+    def __init__(self, center: tuple[float, float] = (settings.WIDTH * 0.74, settings.HEIGHT * 0.37)):
+        """Instantiates the cogs button.
+
+        Args:
+            center: (x, y) of the button center.
+        """
         size = settings.WIDTH * 0.04
-        x = settings.WIDTH * 0.74 - size // 2
-        y = settings.HEIGHT * 0.35
-        super().__init__(size, x, y)
+        super().__init__(size, center[0] - size / 2, center[1] - size / 2)
 
         self.asset = Path(__file__).parent / ".." / "assets" / "cogs_button.png"
         try:
