@@ -49,6 +49,7 @@ class InfoPage:
             ("Credits", "header"),
             ("Original game and idea by Mark Andrade - AndradeArts", "text"),
             ("Pygame version created by Nicola Pesaresi", "text"),
+            ("Music and sounds by Lorenzo Previati", "text"),
         ]
 
         for i, (text, style) in enumerate(self.lines):
