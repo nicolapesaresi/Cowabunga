@@ -167,7 +167,7 @@ class PauseButton(RoundButton):
 
 
 class SoundButton(RoundButton):
-    """Speaker button that opens the sound settings. Drawn in code (no image asset)."""
+    """Speaker button that opens the sound settings."""
 
     def __init__(self):
         size = settings.WIDTH * 0.05
@@ -175,22 +175,14 @@ class SoundButton(RoundButton):
         y = size * 0.5
         super().__init__(size, x, y)
 
-        s = int(size)
-        self.image = pygame.Surface((s, s), pygame.SRCALPHA)
-        # same look as the other round buttons: light blue with a dark outline
-        pygame.draw.circle(self.image, (178, 222, 236), (s // 2, s // 2), s // 2)
-        pygame.draw.circle(self.image, (70, 70, 75), (s // 2, s // 2), s // 2, width=max(2, s // 25))
-        dark = (30, 30, 30)
-        # speaker body and cone
-        body = pygame.Rect(int(s * 0.22), int(s * 0.4), int(s * 0.14), int(s * 0.2))
-        pygame.draw.rect(self.image, dark, body)
-        cone = [(s * 0.36, s * 0.4), (s * 0.52, s * 0.26), (s * 0.52, s * 0.74), (s * 0.36, s * 0.6)]
-        pygame.draw.polygon(self.image, dark, cone)
-        # sound waves
-        for i, radius in enumerate((0.14, 0.24)):
-            r = int(s * radius)
-            arc = pygame.Rect(int(s * 0.5) - r, s // 2 - r, 2 * r, 2 * r)
-            pygame.draw.arc(self.image, dark, arc, -0.8, 0.8, width=max(2, s // (18 + 4 * i)))
+        self.asset = Path(__file__).parent / ".." / "assets" / "volume.png"
+        try:
+            self.image = pygame.image.load(self.asset)
+            self.image = pygame.transform.smoothscale(self.image, (self.width, self.height))
+        except Exception as e:
+            print(f"Unable to load image for SoundButton: {e}")
+            self.image = pygame.Surface((self.width, self.height))
+            self.image.fill("red")
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
 
