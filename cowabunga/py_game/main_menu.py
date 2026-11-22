@@ -4,7 +4,7 @@ from pygame.sprite import Group
 from cowabunga.env.actions import Action
 from cowabunga.env.settings import ACTION_COOLDOWN
 from cowabunga.py_game.commands import CommandModes
-from cowabunga.py_game.sprites.button import InfoButton, LeaderboardButton
+from cowabunga.py_game.sprites.button import InfoButton, LeaderboardButton, SoundButton
 from cowabunga.py_game.sprites.name_textbox import TextBoxSprite
 from cowabunga.py_game.sprites.paddle import PaddleSprite
 from cowabunga.py_game.sprites.text import PressToPlayText, TitleText
@@ -28,7 +28,7 @@ class MainMenu:
         self.main_menu_texts = Group()
         self.main_menu_texts.add(TitleText(), PressToPlayText())
         self.buttons = Group()
-        self.buttons.add(LeaderboardButton(), InfoButton())
+        self.buttons.add(LeaderboardButton(), InfoButton(), SoundButton())
         self.ui = Group()
         self.ui.add(TextBoxSprite(text=self.username))
 
@@ -57,7 +57,7 @@ class MainMenu:
         self.buttons.draw(screen)
         self.ui.draw(screen)
 
-    def handle_events(self) -> tuple[States, str]:
+    def handle_events(self) -> tuple[States, str]:  # noqa: PLR0911
         """Handles main menù events.
 
         Returns:
@@ -77,6 +77,8 @@ class MainMenu:
                         return States.LEADERBOARD, self.username
                     if isinstance(button, InfoButton) and button.clicked(event.pos):
                         return States.INFO, self.username
+                    if isinstance(button, SoundButton) and button.clicked(event.pos):
+                        return States.SETTINGS, self.username
                 for text in self.main_menu_texts.sprites():
                     if hasattr(text, "clicked") and text.clicked(event.pos):
                         return States.GAME, self.username

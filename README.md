@@ -53,14 +53,14 @@ Use Poetry to install the project dependencies:
 ```
 poetry install
 ```
-Now you can run the game on desktop with:
+Now you can run the game on desktop, from the repository root, with:
 ```
-python cowabunga/scripts/run_pygame.py
+python -m cowabunga.scripts.run_pygame
 ```
 
 ## Development
 The game is created with Pygame, and is playable in browser using Pygbag and Github Pages.
-Modifications to the game loop have to be replicated in both `PygameRenderer.run()` and `main.py`, to work both locally and in browser.
+The game loop logic lives in `PygameRenderer.update_state()`, which is used both by the desktop loop (`PygameRenderer.run()`) and by the browser loop (`main.py`).
 Adding modifications to the game requires to install dev dependencies with 
 ```
 poetry install --with dev
@@ -75,9 +75,9 @@ make publish
 ```
 
 ## Resources
-[Pygame documentation](https://www.pygame.org/docs/)
-[Pygbag](https://github.com/pygame-web/pygbag)
-[Pygbag documentation](https://pygame-web.github.io/wiki/pygbag/)
-[Hosting Pygame games with github pages](https://github.com/league-curriculum/Python-Web-Game?tab=readme-ov-file)
-[Mark Andrade website](https://markandrade.com)
+[Pygame documentation](https://www.pygame.org/docs/)  
+[Pygbag](https://github.com/pygame-web/pygbag)   
+[Pygbag documentation](https://pygame-web.github.io/wiki/pygbag/)  
+[Hosting Pygame games with github pages](https://github.com/league-curriculum/Python-Web-Game?tab=readme-ov-file)  
+[Mark Andrade website](https://markandrade.com)  
 [Mark Andrade LinkedIn](https://www.linkedin.com/in/markandrade/)

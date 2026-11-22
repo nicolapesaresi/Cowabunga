@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "cowabunga"
-version = "0.2.0"
+version = "0.3.0"
 description = ""
-authors = ["Nicola Pesaresi"]
+authors = ["Nicola Pesaresi", "Lorenzo Previati"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

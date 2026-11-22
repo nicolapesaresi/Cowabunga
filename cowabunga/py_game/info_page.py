@@ -7,8 +7,13 @@ from cowabunga.env.settings import ACTION_COOLDOWN
 from cowabunga.py_game.commands import CommandModes
 from cowabunga.py_game.sprites.button import BackButton, CogsButton
 from cowabunga.py_game.sprites.paddle import PaddleSprite
-from cowabunga.py_game.sprites.text import TextSprite
+from cowabunga.py_game.sprites.text import PageTitle, TextSprite
 from cowabunga.py_game.states import States
+from cowabunga.py_game.volume_controls import draw_panel
+
+PANEL_TOP = settings.HEIGHT * 0.27
+PANEL_BOTTOM = settings.HEIGHT * 0.8
+PANEL_WIDTH = settings.WIDTH * 0.6
 
 
 class InfoPage:
@@ -23,48 +28,44 @@ class InfoPage:
         """
         self.paddle = paddle
         self.commands = commands
-        self.buttons = Group()
-        self.buttons.add(BackButton(), CogsButton())
+        self.back_button = BackButton()
+        # cogs on the right of the controls lines, inside the panel
+        self.cogs_button = CogsButton((settings.WIDTH * 0.74, settings.HEIGHT * 0.505))
+        self.buttons = Group(self.back_button, self.cogs_button)
 
         self.command_lines = {
             CommandModes.CLICK: "Right/left arrow or click on the screen - move paddle",
             CommandModes.DRAG: "Move mouse or drag - move paddle",
         }
+        self.update_lines()
 
         self.frames_since_last_move = 0  # for paddle movement in page
 
     def update_lines(self):
-        """Updates info page texts based on commands."""
-        self.sprites = pygame.sprite.Group()
+        """Rebuilds info page texts based on current commands."""
+        fonts = {
+            "header": pygame.font.Font(None, settings.HEIGHT // 22),
+            "text": pygame.font.Font(None, settings.HEIGHT // 28),
+        }
         color = {"header": "yellow", "text": "white"}
-        font_size = {"header": settings.HEIGHT // 15, "text": settings.HEIGHT // 25}
-        start_y = int(settings.HEIGHT * 0.3)
-        spacing = font_size["text"] * 1.75
-
-        # update lines based on commands - tuples (text, style)
-        self.lines = [
-            ("Commands", "header"),
-            (self.command_lines[self.commands], "text"),
-            ("Spacebar - pause game", "text"),
-            ("Credits", "header"),
-            ("Original game and idea by Mark Andrade - AndradeArts", "text"),
-            ("Pygame version created by Nicola Pesaresi", "text"),
+        # (text, style, vertical center as fraction of the screen height)
+        lines = [
+            ("Controls", "header", 0.43),
+            (self.command_lines[self.commands], "text", 0.485),
+            ("Spacebar, Esc or pause button - pause game", "text", 0.525),
+            ("Credits", "header", 0.62),
+            ("Original game and idea by Mark Andrade - AndradeArts", "text", 0.675),
+            ("Pygame version created by Nicola Pesaresi", "text", 0.715),
+            ("Music and sounds by Lorenzo Previati", "text", 0.755),
         ]
-
-        for i, (text, style) in enumerate(self.lines):
-            y = start_y + i * spacing
-            sprite = TextSprite(
-                text=text,
-                font=pygame.font.Font(None, font_size[style]),
-                color=color[style],
-                pos=(settings.WIDTH // 2, y),
-            )
-            sprite.rect.centerx = settings.WIDTH // 2
+        self.sprites = Group(PageTitle("Info"))
+        for text, style, y in lines:
+            sprite = TextSprite(text, fonts[style], color[style], (0, 0))
+            sprite.rect.center = (settings.WIDTH // 2, int(settings.HEIGHT * y))
             self.sprites.add(sprite)
 
     def update(self):
         """Updates according to paddle input."""
-        self.update_lines()
         # move paddle in menù
         action = self.paddle.get_key_input(self.commands)
         if action in (Action.LEFT, Action.RIGHT) and self.frames_since_last_move >= ACTION_COOLDOWN:
@@ -76,30 +77,35 @@ class InfoPage:
         self.frames_since_last_move += 1
 
     def draw(self, screen: pygame.Surface):
-        """Draw all lines centered and buttons.
+        """Draws the page. Must be called after PygameRenderer.draw_screen() to have background.
 
         Args:
             screen: pygame surface to draw on.
         """
+        draw_panel(screen, PANEL_TOP, PANEL_BOTTOM, PANEL_WIDTH)
         self.sprites.draw(screen)
         self.buttons.draw(screen)
 
-    def handle_events(self) -> States:
+    def toggle_commands(self):
+        """Switches between click and drag commands."""
+        self.commands = CommandModes.DRAG if self.commands == CommandModes.CLICK else CommandModes.CLICK
+        self.update_lines()
+
+    def handle_events(self) -> tuple[States, CommandModes]:
         """Handles info page events.
 
         Returns:
             render_state: outcome of event handling.
+            commands: the (possibly changed) command mode.
         """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return States.CLOSE, self.commands
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                for button in self.buttons.sprites():
-                    if isinstance(button, BackButton) and button.clicked(event.pos):
-                        return States.MENU, self.commands
-                    elif isinstance(button, CogsButton) and button.clicked(event.pos):
-                        if self.commands == CommandModes.CLICK:
-                            self.commands = CommandModes.DRAG
-                        elif self.commands == CommandModes.DRAG:
-                            self.commands = CommandModes.CLICK
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                return States.MENU, self.commands
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if self.back_button.clicked(event.pos):
+                    return States.MENU, self.commands
+                if self.cogs_button.clicked(event.pos):
+                    self.toggle_commands()
         return States.INFO, self.commands

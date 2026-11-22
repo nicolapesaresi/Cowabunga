@@ -11,3 +11,4 @@ class States(IntEnum):
     LEADERBOARD = 4
     INFO = 5
     CLOSE = 6
+    SETTINGS = 7

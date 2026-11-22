@@ -193,3 +193,12 @@ class PauseText(TextSprite):
         super().__init__(text, font, color, pos)
         # center text
         self.rect.centerx = settings.WIDTH // 2
+
+
+class PageTitle(TextSprite):
+    """Yellow title at the top of a menu panel (sound, info and records pages)."""
+
+    def __init__(self, text: str, center_y: float = settings.HEIGHT * 0.335):
+        font = pygame.font.Font(None, settings.HEIGHT // 12)
+        super().__init__(text, font, "yellow", (0, 0))
+        self.rect.center = (settings.WIDTH // 2, int(center_y))
