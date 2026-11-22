@@ -1,6 +1,7 @@
 import json
 import random
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -61,6 +62,11 @@ class PygameRenderer:
             self.screen = screen
         self.seed = seed
         self.fps = settings.FPS
+        # fixed timestep: real time is converted into a whole number of env steps per frame
+        self.step_ms = 1000 / self.fps
+        self.frame_steps = 0  # env/background steps to run in the current frame
+        self.accumulator_ms = 0.0
+        self.last_frame_time: float | None = None
         self.highscores_json = Path(__file__).parent / ".." / "highscores.json"
         self.user_settings_json = Path(__file__).parent / ".." / "user_settings.json"
         self.username = settings.DEFAULT_USERNAME
@@ -186,6 +192,7 @@ class PygameRenderer:
         Returns:
             render_state: state for the next frame.
         """
+        self.frame_steps = self.advance_clock()
         if render_state == States.MENU:
             render_state = self.main_menu()
         elif render_state == States.INFO:
@@ -203,6 +210,32 @@ class PygameRenderer:
         self.audio.update()
         return render_state
 
+    def advance_clock(self) -> int:
+        """Converts the real time elapsed since the last frame into a number of fixed env steps.
+
+        The env always advances in steps of 1/FPS s, so game speed is the same on any hardware:
+        a slow frame runs several steps, while leftover time carries over to the next frame.
+
+        Returns:
+            steps: number of fixed steps to run in this frame.
+        """
+        now = time.perf_counter()
+        if self.last_frame_time is None:
+            frame_ms = self.step_ms
+        else:
+            frame_ms = (now - self.last_frame_time) * 1000
+        self.last_frame_time = now
+
+        # at full speed run exactly one step per frame, instead of alternating 0 and 2 due to timer jitter
+        if abs(frame_ms - self.step_ms) < settings.FRAME_SNAP_MS:
+            frame_ms = self.step_ms
+        # after a long hitch (e.g. browser tab hidden) don't fast-forward the game
+        self.accumulator_ms = min(self.accumulator_ms + frame_ms, self.step_ms * settings.MAX_STEPS_PER_FRAME)
+
+        steps = int(self.accumulator_ms // self.step_ms)
+        self.accumulator_ms -= steps * self.step_ms
+        return steps
+
     def game_step(self) -> States:
         """Runs one frame of the main game: input, env update, sounds and drawing."""
         render_state = States.GAME
@@ -217,10 +250,16 @@ class PygameRenderer:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.pause_button.clicked(event.pos):
                 render_state = States.PAUSE
 
-        # player input and env update
-        action = self.paddle.get_key_input(self.commands)
-        _, done, info = self.env.step(action)  # TODO: this only supports human player actions, change to support Agent
-        self.audio.process_events(info["events"])
+        # player input and env update: as many fixed steps as the elapsed real time requires
+        done = False
+        if self.frame_steps > 0:
+            action = self.paddle.get_key_input(self.commands)
+            for _ in range(self.frame_steps):
+                # TODO: this only supports human player actions, change to support Agent
+                _, done, info = self.env.step(action)
+                self.audio.process_events(info["events"])
+                if done:
+                    break
         self.update_cows()
 
         # draw new screen
@@ -276,9 +315,10 @@ class PygameRenderer:
             move_background: if False, backgorund (sea and clouds) doesn't update.
         """
         if move_background:
-            self.update_clouds()
-            self.back_sea.update()
-            self.front_sea.update()
+            for _ in range(self.frame_steps):  # same fixed timestep as the env
+                self.update_clouds()
+                self.back_sea.update()
+                self.front_sea.update()
         self.screen.blit(self.sky.image, self.sky.rect)
         self.clouds.draw(self.screen)
         self.back_sea.draw(self.screen)

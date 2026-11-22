@@ -25,6 +25,9 @@ left_cliff_height = HEIGHT / 3.4  # used both by Cow and Cliff
 FPS = 60
 ACTION_COOLDOWN = 10  # number of frames you can't move after having moved
 # this allows time for rendering the movement
+# fixed timestep: the env always advances in 1/FPS s steps, the renderer runs as many as real time requires
+MAX_STEPS_PER_FRAME = 5  # cap on catch-up steps after a slow frame (avoids spiral of death)
+FRAME_SNAP_MS = 2  # frame times this close to one step count as exactly one step (absorbs timer jitter)
 
 # AESTHETICS
 MAX_CLOUDS_ON_SCREEN = 7
