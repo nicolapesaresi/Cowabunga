@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pygame
-from pygame.sprite import Group
+from pygame.sprite import Group, LayeredUpdates
 
 from cowabunga.env import settings
 from cowabunga.env.env import CowabungaEnv
@@ -162,9 +162,8 @@ class PygameRenderer:
         self.sky = SkySprite()
         self.back_sea = BackSeaSprite()
         self.front_sea = FrontSeaSprite()
-        self.clouds = Group()
-        for _i in range(2):
-            self.clouds.add(CloudSprite(x=random.random() * settings.WIDTH / 2 + settings.WIDTH / 2))
+        self.clouds = LayeredUpdates()  # layered by depth: far clouds are drawn first
+        self.spawn_initial_clouds()
         # score and lives
         self.lives = LivesSprite(self.env.lives)
         self.score = ScoreSprite(self.env.score)
@@ -297,20 +296,61 @@ class PygameRenderer:
         for sprite in self.cow_sprites.values():
             sprite.update()
 
+    def add_cloud(self, cloud: CloudSprite) -> bool:
+        """Adds cloud to the sky if it doesn't overlap any existing cloud.
+
+        Returns:
+            added: whether the cloud was added.
+        """
+        if any(self.clouds_will_overlap(cloud, o) or self.clouds_will_overlap(o, cloud) for o in self.clouds):
+            return False
+        self.clouds.add(cloud, layer=int(cloud.depth * 10))
+        return True
+
+    @staticmethod
+    def clouds_will_overlap(new: CloudSprite, other: CloudSprite) -> bool:
+        """Checks whether a new cloud overlaps another one now, or will catch up with it while on screen.
+
+        Both clouds are assumed to move left, the new one starting to the right of the other.
+        """
+        if new.rect.colliderect(other.rect):
+            return True
+        if new.rect.bottom <= other.rect.top or new.rect.top >= other.rect.bottom:
+            return False  # different heights in the sky: they can pass each other
+        if new.x < other.x or abs(new.speed) <= abs(other.speed):
+            return False  # the new cloud is behind and not faster: it never reaches the other one
+        gap = new.x - (other.x + other.width)
+        catch_up_steps = gap / (abs(new.speed) - abs(other.speed))
+        other_exit_steps = (other.x + other.width) / abs(other.speed)
+        return catch_up_steps < other_exit_steps
+
+    def spawn_initial_clouds(self):
+        """Fills the sky with clouds spread across the whole screen."""
+        attempts = 0
+        while len(self.clouds) < settings.INITIAL_CLOUDS and attempts < 50:
+            attempts += 1
+            cloud = CloudSprite()
+            cloud.x = random.uniform(-cloud.width / 2, settings.WIDTH - cloud.width / 2)
+            cloud.rect.x = round(cloud.x)
+            self.add_cloud(cloud)
+        self.cloud_spawn_timer = random.randint(0, settings.CLOUD_SPAWN_MAX_STEPS)
+
     def update_clouds(self):
-        """Updates and generates new clouds."""
-        to_remove = []
-        for cloud in list(self.clouds):
-            if (int(cloud.rect.x) > settings.WIDTH and cloud.speed >= 0) or (
-                int(cloud.rect.x) + cloud.width < 0 and cloud.speed <= 0
-            ):
-                to_remove.append(cloud)
+        """Updates clouds and spawns new ones at steady, randomised intervals."""
         self.clouds.update()
-        for cloud in to_remove:
-            cloud.kill()
-        # spaw new clouds
-        if random.random() <= settings.NEW_CLOUD_PROB and len(self.clouds) < settings.MAX_CLOUDS_ON_SCREEN:
-            self.clouds.add(CloudSprite(x=settings.WIDTH))
+        for cloud in list(self.clouds):
+            if cloud.is_offscreen():
+                cloud.kill()
+        # spawn new clouds
+        self.cloud_spawn_timer -= 1
+        if self.cloud_spawn_timer > 0 or len(self.clouds) >= settings.MAX_CLOUDS_ON_SCREEN:
+            return
+        for _ in range(settings.CLOUD_SPAWN_ATTEMPTS):
+            if self.add_cloud(CloudSprite()):
+                self.cloud_spawn_timer = random.randint(settings.CLOUD_SPAWN_MIN_STEPS, settings.CLOUD_SPAWN_MAX_STEPS)
+                return
+        # no free spot right now (e.g. a big cloud is still entering): retry shortly
+        self.cloud_spawn_timer = settings.CLOUD_SPAWN_RETRY_STEPS
 
     def draw_screen(self, move_background: bool = True):
         """Draws the updated screen.

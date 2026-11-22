@@ -34,7 +34,11 @@ FRAME_SNAP_MS = 2  # frame times this close to one step count as exactly one ste
 
 # AESTHETICS
 MAX_CLOUDS_ON_SCREEN = 7
-NEW_CLOUD_PROB = 0.005
+INITIAL_CLOUDS = 4
+CLOUD_SPAWN_MIN_STEPS = 120  # steps between new clouds (at 60 FPS: 2-5 s)
+CLOUD_SPAWN_MAX_STEPS = 300
+CLOUD_SPAWN_RETRY_STEPS = 20  # wait before retrying when there's no room for a new cloud
+CLOUD_SPAWN_ATTEMPTS = 5  # random size/height candidates tried per spawn
 
 DEFAULT_USERNAME = "Cowboy"
 
