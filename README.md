@@ -58,17 +58,6 @@ Now you can run the game on desktop, from the repository root, with:
 python -m cowabunga.scripts.run_pygame
 ```
 
-## Audio
-All sounds are generated in code (`cowabunga/py_game/audio`), from a shared set of musical rules in `theory.py` (key of D major, 72 BPM with swing, Dmaj7 - Bm7 - Gmaj7 - A6 progression):
-- relaxing indie background music, starting when the main menu opens: strummed ukulele, plucked bass, shaker and a whistled theme, with small human imperfections and a lo-fi touch (tape wobble, saturation, vinyl crackle). The whistled theme is in front in the menu and in the background while playing; the music is lowered during pause;
-- a handpan note every time a cow bounces on the paddle: an instrument that is not in the background band, so the player clearly hears each bounce (other instruments can be chosen with `AudioManager.BOUNCE_INSTRUMENT`: vibraphone, ocarina or felt piano). Notes are always tones of the chord the music is playing, so they never clash with it. The more often cows bounce, the faster the melody gets (more notes per bounce, on the music's rhythmic grid);
-- a "muuu" when a cow falls in the water;
-- a sad "wah wah wah" when the game is lost.
-
-Music and sound effects volumes can be changed from the speaker button in the main menu or from the pause screen (pause button, spacebar or Esc during the game). The choice is saved in `cowabunga/user_settings.json` on desktop and in the browser's localStorage online.
-
-The env reports what happened in each step in `info["events"]` (see `cowabunga/env/events.py`), and `AudioManager` turns events into sounds. To replace a generated sound with a recording, put `music.ogg`, `moo.ogg` or `game_over.ogg` in `cowabunga/py_game/assets/sounds/`.
-
 ## Development
 The game is created with Pygame, and is playable in browser using Pygbag and Github Pages.
 The game loop logic lives in `PygameRenderer.update_state()`, which is used both by the desktop loop (`PygameRenderer.run()`) and by the browser loop (`main.py`).
@@ -86,9 +75,9 @@ make publish
 ```
 
 ## Resources
-[Pygame documentation](https://www.pygame.org/docs/)
-[Pygbag](https://github.com/pygame-web/pygbag)
-[Pygbag documentation](https://pygame-web.github.io/wiki/pygbag/)
-[Hosting Pygame games with github pages](https://github.com/league-curriculum/Python-Web-Game?tab=readme-ov-file)
-[Mark Andrade website](https://markandrade.com)
+[Pygame documentation](https://www.pygame.org/docs/)  
+[Pygbag](https://github.com/pygame-web/pygbag)   
+[Pygbag documentation](https://pygame-web.github.io/wiki/pygbag/)  
+[Hosting Pygame games with github pages](https://github.com/league-curriculum/Python-Web-Game?tab=readme-ov-file)  
+[Mark Andrade website](https://markandrade.com)  
 [Mark Andrade LinkedIn](https://www.linkedin.com/in/markandrade/)
